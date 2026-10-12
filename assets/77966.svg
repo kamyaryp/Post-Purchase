@@ -1,0 +1,30 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Store Confirmation Step">
+<g id="Store Confirmation Step Background" filter="url(#filter0_ii_0_818)">
+<circle cx="16" cy="16" r="16" fill="url(#paint0_linear_0_818)"/>
+</g>
+<path id="Store Confirmation Icon" d="M19.7588 16.3408C20.2512 16.7417 20.8866 16.9863 21.5996 16.9863C22.0947 16.9863 22.5576 16.86 22.9532 16.6582V22.166C22.9532 23.1293 22.3963 23.6758 21.4141 23.6758H15.3838V19.7012C15.3838 19.3892 15.1821 19.1876 14.8702 19.1875H12.0606C11.7485 19.1875 11.5411 19.3891 11.5411 19.7012V23.6758H10.7149C9.73286 23.6757 9.17582 23.1293 9.17582 22.166V16.6904C9.57673 16.8761 10.0396 16.9863 10.5293 16.9863C11.2368 16.9863 11.88 16.7416 12.375 16.3408C12.8729 16.7418 13.5059 16.9863 14.2217 16.9863C14.9371 16.9862 15.5773 16.7415 16.0616 16.3408C16.554 16.7418 17.2005 16.9863 17.9082 16.9863C18.6156 16.9862 19.2585 16.7415 19.7588 16.3408ZM17.4746 18.5195C17.1626 18.5195 16.9552 18.7271 16.9551 19.0391V20.9854C16.9553 21.2972 17.1627 21.499 17.4746 21.499H20.4346C20.7466 21.499 20.9481 21.2972 20.9483 20.9854V19.0391C20.9482 18.7271 20.7466 18.5195 20.4346 18.5195H17.4746ZM20.6153 8.32422C21.4923 8.32437 22.001 8.83314 22.001 9.69141C22.001 10.0384 22.0845 10.3772 22.2432 10.6865L24 14.0742L23.9883 14.2559C23.8699 15.1722 22.8854 16.0469 21.667 16.0469C20.8571 16.0469 20.1734 15.6679 19.7832 15.0518C19.3823 15.6651 18.6988 16.0469 17.8916 16.0469C17.0845 16.0469 16.3902 15.6571 16 15.0518C15.6098 15.6571 14.9261 16.0469 14.1163 16.0469C13.3064 16.0468 12.6148 15.6678 12.2246 15.0518C11.8237 15.6651 11.1402 16.0469 10.333 16.0469C9.03617 16.0469 8.00024 15.057 8.00004 14.0723L9.75688 10.6865C9.91556 10.3799 9.99903 10.0384 9.99906 9.69141C9.99906 8.83312 10.5078 8.32434 11.3741 8.32422H20.6153Z" fill="white"/>
+</g>
+<defs>
+<filter id="filter0_ii_0_818" x="0" y="-2" width="32" height="38" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="4"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.4 0"/>
+<feBlend mode="normal" in2="shape" result="effect1_innerShadow_0_818"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="-2"/>
+<feGaussianBlur stdDeviation="4"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.3 0"/>
+<feBlend mode="normal" in2="effect1_innerShadow_0_818" result="effect2_innerShadow_0_818"/>
+</filter>
+<linearGradient id="paint0_linear_0_818" x1="16" y1="0" x2="16" y2="32" gradientUnits="userSpaceOnUse">
+<stop stop-color="#717374"/>
+<stop offset="1" stop-color="#404449"/>
+</linearGradient>
+</defs>
+</svg>

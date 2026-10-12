@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="fa">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>پیگیری سفارش</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Prototype controls (not part of the design) -->
+  <div class="proto-controls">
+  <label class="state-picker">
+    <span>Iteration</span>
+    <select id="iterationSelect" aria-label="Design iteration">
+      <option value="3" selected>3</option>
+    </select>
+  </label>
+  <label class="state-picker">
+    <span>State</span>
+    <select id="stateSelect" aria-label="Order state">
+      <option value="awaiting">Awaiting confirmation</option>
+      <option value="preparing">Preparing</option>
+      <option value="finding">Finding courier</option>
+      <option value="out">Out for delivery</option>
+      <option value="delivered">Delivered</option>
+    </select>
+  </label>
+  </div>
+
+  <main class="device" id="device" data-state="awaiting">
+
+    <!-- Fixed map (stays put while the cards scroll over it) -->
+    <div class="map" id="map" aria-hidden="true">
+      <img class="map__img" src="assets/2225c.png" alt="" />
+      <svg class="map__overlay" viewBox="0 0 390 662.228" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="routeGrad" x1="0.12" y1="4.178" x2="230.28" y2="-3.05" gradientUnits="userSpaceOnUse"><stop stop-color="#ED1944"/><stop offset="1" stop-color="#757879"/></linearGradient>
+          <radialGradient id="radarGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(175.5 175.498) rotate(120) scale(169.472)"><stop stop-color="#ED1944" stop-opacity="0.4"/><stop offset="1" stop-color="#ED1944" stop-opacity="0"/></radialGradient>
+          <linearGradient id="radarWedge" x1="308.406" y1="168.332" x2="220.199" y2="85.1366" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.8"/><stop offset="1" stop-color="white" stop-opacity="0"/></linearGradient>
+          <filter id="radarBlur" x="0" y="0" width="351" height="351" filterUnits="userSpaceOnUse"><feGaussianBlur stdDeviation="3"/></filter>
+          <linearGradient id="pinGray" x1="18" y1="0" x2="18" y2="39.599" gradientUnits="userSpaceOnUse"><stop stop-color="#717374"/><stop offset="1" stop-color="#404449"/></linearGradient>
+          <linearGradient id="pinRed" x1="18" y1="0" x2="18" y2="39.599" gradientUnits="userSpaceOnUse"><stop stop-color="#ED1944"/><stop offset="1" stop-color="#BC1234"/></linearGradient>
+          <radialGradient id="pinShadow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(18 43.4576) scale(6.85714 1.28571)"><stop stop-opacity="0.3"/><stop offset="1" stop-opacity="0"/></radialGradient>
+          <filter id="pinInner" x="0" y="-2" width="36" height="43.6" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="bg"/><feBlend in="SourceGraphic" in2="bg" result="shape"/>
+            <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="a"/><feOffset dy="2"/><feGaussianBlur stdDeviation="4"/><feComposite in2="a" operator="arithmetic" k2="-1" k3="1"/><feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.3 0"/><feBlend in2="shape" result="s1"/>
+            <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="b"/><feOffset dy="-2"/><feGaussianBlur stdDeviation="4"/><feComposite in2="b" operator="arithmetic" k2="-1" k3="1"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.3 0"/><feBlend in2="s1"/>
+          </filter>
+          <filter id="pinBlur" x="8" y="39" width="20" height="9" filterUnits="userSpaceOnUse"><feGaussianBlur stdDeviation="1.5"/></filter>
+        </defs>
+
+        <!-- Finding courier: radar search area around the store -->
+        <g class="ml ml--radar" transform="translate(-78 34.53)">
+          <g class="radar__glow"><path filter="url(#radarBlur)" fill="url(#radarGlow)" d="M90.7641 322.267C9.70708 275.468 -18.0651 171.821 28.7332 90.7641C75.5315 9.70708 179.179 -18.0651 260.236 28.7332C341.293 75.5315 369.065 179.179 322.267 260.236C275.468 341.293 171.821 369.065 90.7641 322.267Z"/></g>
+          <g class="radar__sweep"><path fill="url(#radarWedge)" d="M344.971 175.502C344.971 143.161 335.716 111.494 318.301 84.2427C300.885 56.9909 276.036 35.2914 246.686 21.7063L175.499 175.502H344.971Z"/></g>
+        </g>
+
+        <!-- Finding courier: nearby couriers blink in and out on the streets inside the radar -->
+        <g class="ml ml--blips" id="blips">
+        </g>
+
+        <!-- Preparing: planned route (grey) -->
+        <g class="ml ml--plan" transform="translate(88.49 188.79)">
+          <path d="M9.14745 23.5649L2.31696 47.0922C1.09793 51.2911 3.47577 55.6909 7.65626 56.9717L78.8316 78.778C83.2132 80.1204 87.8248 77.515 88.9362 73.0692L103.887 13.2659C105.006 8.79043 109.668 6.18618 114.066 7.58012L210.641 38.1928C214.867 39.5324 219.377 37.1798 220.696 32.9473L230.342 2.00053" stroke="#999" stroke-opacity="0.3" stroke-width="4" stroke-linecap="round" fill="none"/>
+          <path class="route-dash" d="M9.14745 23.5649L2.31696 47.0922C1.09793 51.2911 3.47577 55.6909 7.65626 56.9717L78.8316 78.778C83.2132 80.1204 87.8248 77.515 88.9362 73.0692L103.887 13.2659C105.006 8.79043 109.668 6.18618 114.066 7.58012L210.641 38.1928C214.867 39.5324 219.377 37.1798 220.696 32.9473L230.342 2.00053" stroke="#999" stroke-width="4" stroke-linecap="round" stroke-dasharray="4 8" fill="none"/>
+        </g>
+        <!-- Finding courier: planned route (brand gradient) -->
+        <g class="ml ml--find" transform="translate(88.49 188.79)">
+          <path d="M9.14745 23.5649L2.31696 47.0922C1.09793 51.2911 3.47577 55.6909 7.65626 56.9717L78.8316 78.778C83.2132 80.1204 87.8248 77.515 88.9362 73.0692L103.887 13.2659C105.006 8.79043 109.668 6.18618 114.066 7.58012L210.641 38.1928C214.867 39.5324 219.377 37.1798 220.696 32.9473L230.342 2.00053" stroke="url(#routeGrad)" stroke-opacity="0.3" stroke-width="4" stroke-linecap="round" fill="none"/>
+          <path class="route-dash" d="M9.14745 23.5649L2.31696 47.0922C1.09793 51.2911 3.47577 55.6909 7.65626 56.9717L78.8316 78.778C83.2132 80.1204 87.8248 77.515 88.9362 73.0692L103.887 13.2659C105.006 8.79043 109.668 6.18618 114.066 7.58012L210.641 38.1928C214.867 39.5324 219.377 37.1798 220.696 32.9473L230.342 2.00053" stroke="url(#routeGrad)" stroke-width="4" stroke-linecap="round" stroke-dasharray="4 8" fill="none"/>
+        </g>
+        <!-- Out for delivery / delivered: completed (grey) + remaining (pink) -->
+        <g class="ml ml--live" transform="translate(88.49 188.79)">
+          <path id="routeDone" d="M9.14745 23.5649L2.31696 47.0922C1.09793 51.2911 3.47577 55.6909 7.65626 56.9717L78.8316 78.778C83.2132 80.1204 87.8248 77.515 88.9362 73.0692L103.887 13.2659C105.006 8.79043 109.668 6.18618 114.066 7.58012L210.641 38.1928C214.867 39.5324 219.377 37.1798 220.696 32.9473L230.342 2.00053" pathLength="1" stroke="#C8C8C8" stroke-width="4" stroke-linecap="round" fill="none" stroke-dasharray="0.2 2"/>
+          <path id="routeLeft" d="M9.14745 23.5649L2.31696 47.0922C1.09793 51.2911 3.47577 55.6909 7.65626 56.9717L78.8316 78.778C83.2132 80.1204 87.8248 77.515 88.9362 73.0692L103.887 13.2659C105.006 8.79043 109.668 6.18618 114.066 7.58012L210.641 38.1928C214.867 39.5324 219.377 37.1798 220.696 32.9473L230.342 2.00053" pathLength="1" stroke="#F3839A" stroke-width="4" stroke-linecap="round" fill="none" stroke-dasharray="0.8 2" stroke-dashoffset="-0.2"/>
+        </g>
+
+        <!-- Store pin (grey; red while searching for a courier) -->
+        <g class="ml ml--store" transform="translate(79.09 168.27)">
+          <path class="pin-gray" filter="url(#pinInner)" fill="url(#pinGray)" d="M36 17.9965C36 26.276 30.4053 33.2581 22.7782 35.3505C21.6083 35.673 20.5658 36.3555 19.8759 37.3604L18.5335 39.3178C18.2785 39.6928 17.7235 39.6928 17.461 39.3178L16.1786 37.4504C15.4811 36.4305 14.4537 35.688 13.2613 35.358C5.0192 33.1231 -0.875472 25.1586 0.106974 16.0016C1.00692 7.72203 7.64406 1.0474 15.9236 0.117451C26.7905 -1.10498 36 7.37705 36 18.004V17.9965Z"/>
+          <path class="pin-red" filter="url(#pinInner)" fill="url(#pinRed)" d="M36 17.9965C36 26.276 30.4053 33.2581 22.7782 35.3505C21.6083 35.673 20.5658 36.3555 19.8759 37.3604L18.5335 39.3178C18.2785 39.6928 17.7235 39.6928 17.461 39.3178L16.1786 37.4504C15.4811 36.4305 14.4537 35.688 13.2613 35.358C5.0192 33.1231 -0.875472 25.1586 0.106974 16.0016C1.00692 7.72203 7.64406 1.0474 15.9236 0.117451C26.7905 -1.10498 36 7.37705 36 18.004V17.9965Z"/>
+          <path fill="white" transform="translate(2 1.82)" d="M19.7588 16.3408C20.2512 16.7417 20.8866 16.9863 21.5996 16.9863C22.0947 16.9863 22.5576 16.86 22.9532 16.6582V22.166C22.9532 23.1293 22.3963 23.6758 21.4141 23.6758H15.3838V19.7012C15.3838 19.3892 15.1821 19.1876 14.8702 19.1875H12.0606C11.7485 19.1875 11.5411 19.3891 11.5411 19.7012V23.6758H10.7149C9.73286 23.6757 9.17582 23.1293 9.17582 22.166V16.6904C9.57673 16.8761 10.0396 16.9863 10.5293 16.9863C11.2368 16.9863 11.88 16.7416 12.375 16.3408C12.8729 16.7418 13.5059 16.9863 14.2217 16.9863C14.9371 16.9862 15.5773 16.7415 16.0616 16.3408C16.554 16.7418 17.2005 16.9863 17.9082 16.9863C18.6156 16.9862 19.2585 16.7415 19.7588 16.3408ZM17.4746 18.5195C17.1626 18.5195 16.9552 18.7271 16.9551 19.0391V20.9854C16.9553 21.2972 17.1627 21.499 17.4746 21.499H20.4346C20.7466 21.499 20.9481 21.2972 20.9483 20.9854V19.0391C20.9482 18.7271 20.7466 18.5195 20.4346 18.5195H17.4746ZM20.6153 8.32422C21.4923 8.32437 22.001 8.83314 22.001 9.69141C22.001 10.0384 22.0845 10.3772 22.2432 10.6865L24 14.0742L23.9883 14.2559C23.8699 15.1722 22.8854 16.0469 21.667 16.0469C20.8571 16.0469 20.1734 15.6679 19.7832 15.0518C19.3823 15.6651 18.6988 16.0469 17.8916 16.0469C17.0845 16.0469 16.3902 15.6571 16 15.0518C15.6098 15.6571 14.9261 16.0469 14.1163 16.0469C13.3064 16.0468 12.6148 15.6678 12.2246 15.0518C11.8237 15.6651 11.1402 16.0469 10.333 16.0469C9.03617 16.0469 8.00024 15.057 8.00004 14.0723L9.75688 10.6865C9.91556 10.3799 9.99903 10.0384 9.99906 9.69141C9.99906 8.83312 10.5078 8.32434 11.3741 8.32422H20.6153Z"/>
+          <ellipse filter="url(#pinBlur)" cx="18" cy="43.4576" rx="6.85714" ry="1.28571" fill="url(#pinShadow)"/>
+        </g>
+
+        <!-- Courier moving along the route -->
+        <g class="ml ml--courier" id="courier" transform="translate(132.5 256.7) rotate(103)">
+          <image href="assets/courier-map.png" x="-25" y="-25" width="50" height="50"/>
+        </g>
+      </svg>
+      <div class="map__pin"><img src="assets/50343.svg" alt="" /></div>
+    </div>
+
+    <!-- Fixed header: phone status bar + top app bar -->
+    <header class="header">
+      <div class="statusbar">
+        <span class="statusbar__time">19:02</span>
+        <img class="statusbar__icons" src="assets/f9908.svg" alt="" />
+      </div>
+      <div class="appbar">
+        <button class="btn btn--elevated btn--support">
+          <span class="btn__label" dir="rtl">پشتیبانی</span>
+          <img src="assets/e1d41.svg" alt="" />
+        </button>
+        <p class="appbar__title" dir="rtl">پیگیری سفارش</p>
+        <button class="btn btn--elevated btn--icon" aria-label="بازگشت"><img src="assets/de76c.svg" alt="" /></button>
+      </div>
+    </header>
+
+    <!-- Scrollable screen (no visible scrollbar) -->
+    <div class="scroller" id="scroller">
+      <div class="screen" id="screen">
+        <div class="sheet-spacer" id="sheetSpacer" aria-hidden="true"></div>
+        <div class="sheet-snap" id="sheetSnap" aria-hidden="true"></div>
+
+        <div class="content" id="content">
+          <div class="sheet-fade" aria-hidden="true"></div>
+          <!-- Order status card -->
+          <section class="status-card" aria-live="polite">
+            <span class="badge__track" aria-hidden="true"></span>
+            <!-- Status Progress Ring: brand arc that drains with the countdown -->
+            <svg class="badge__arc" viewBox="0 0 140 140" aria-hidden="true">
+              <circle id="badgeArc" cx="70" cy="70" r="67.5" pathLength="1" fill="none" stroke="#ED1944" stroke-opacity="0.7" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.625 2" transform="rotate(-90 70 70)"/>
+            </svg>
+            <div class="badge" id="badge">
+              <div class="badge__ill" id="badgeIll"><img id="badgeIllImg" src="assets/dc968.png" alt="" /></div>
+              <div class="badge__timer" id="badgeTimer">۴۴:۵۹</div>
+            </div>
+
+            <div class="status-card__content">
+              <img class="status-card__top" src="assets/bf6d7.svg" alt="" />
+              <div class="status-card__body" id="statusBody">
+
+                <div class="status-header">
+                  <div class="eta">
+                    <span class="eta__label" dir="rtl">تحویل تا ۱۳:۳۰</span>
+                    <span class="eta__icon"><img src="assets/f964a.svg" alt="" /></span>
+                  </div>
+                  <h1 class="status-header__title" id="statusTitle" dir="rtl">در انتظار تأیید فروشگاه</h1>
+                </div>
+
+                <!-- Progress stepper: RTL flow, store on the right -->
+                <nav class="stepper" aria-label="مراحل سفارش">
+                  <button class="step" data-go="delivered" data-step="completion" aria-label="تحویل داده شد">
+                    <img class="step__off" src="assets/bc7b5.svg" alt="" />
+                    <img class="step__on" src="assets/536b5.svg" alt="" />
+                  </button>
+                  <button class="bar bar--clickable" data-go="out" aria-label="پیک به سمت شما">
+                    <span class="bar__track"><i class="bar__fill" data-bar="3"><b></b></i></span>
+                  </button>
+                  <button class="step" data-go="finding" data-step="dispatch" aria-label="در جستجوی پیک">
+                    <img class="step__off" src="assets/4d21b.svg" alt="" />
+                    <img class="step__on" src="assets/94e32.svg" alt="" />
+                  </button>
+                  <span class="bar"><span class="bar__track"><i class="bar__fill" data-bar="2"><b></b></i></span></span>
+                  <button class="step" data-go="preparing" data-step="processing" aria-label="در حال آماده‌سازی">
+                    <img class="step__off" src="assets/030d3.svg" alt="" />
+                    <img class="step__on" src="assets/a823a.svg" alt="" />
+                  </button>
+                  <span class="bar"><span class="bar__track"><i class="bar__fill" data-bar="1"><b></b></i></span></span>
+                  <button class="step is-on" data-go="awaiting" data-step="store" aria-label="در انتظار تأیید فروشگاه">
+                    <img class="step__on" src="assets/77966.svg" alt="" />
+                  </button>
+                </nav>
+
+                <!-- Awaiting: delivery address + cancel -->
+                <div class="sec sec--awaiting address-row">
+                  <button class="btn btn--icon" aria-label="ویرایش آدرس"><img src="assets/f0bd6.svg" alt="" /></button>
+                  <div class="address-row__text">
+                    <p class="t-prominent-sm" dir="rtl">ارسال به خانه</p>
+                    <p class="t-subtle-sm" dir="rtl">ونک، ملاصدرا، شیخ‌بهایی، نبش لادن، پلاک ۸۵</p>
+                  </div>
+                </div>
+                <div class="sec sec--awaiting actions-section">
+                  <div class="divider divider--bleed"><span></span></div>
+                  <button class="btn btn--negative">
+                    <span class="btn__label" dir="rtl">لغو سفارش</span>
+                    <img src="assets/98674.svg" alt="" />
+                  </button>
+                </div>
+
+                <!-- Out for delivery: courier -->
+                <div class="sec sec--out courier">
+                  <button class="btn btn--sm">
+                    <span class="btn__label" dir="rtl">تماس با پیک</span>
+                    <img class="btn__icon20" src="assets/f1c93.svg" alt="" />
+                  </button>
+                  <p class="courier__name" dir="rtl">طاها مرادی</p>
+                  <img class="courier__avatar" src="assets/43f6e.jpg" alt="" />
+                </div>
+
+                <!-- Delivered: post-delivery actions -->
+                <div class="sec sec--delivered post-actions">
+                  <button class="btn btn--block"><span class="btn__label" dir="rtl">سفارش مجدد</span></button>
+                  <button class="btn btn--brand btn--block"><span class="btn__label" dir="rtl">ثبت بازخورد</span></button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Order detail card -->
+          <section class="detail-card" id="detailCard">
+            <div class="detail-card__header">
+              <button class="btn btn--sm">
+                <span class="btn__label in-awaiting" dir="rtl">جزئیات/ویرایش</span>
+                <span class="btn__label not-awaiting" dir="rtl">جزئیات</span>
+                <img class="btn__icon20 in-awaiting" src="assets/18fa3.svg" alt="" />
+              </button>
+              <h2 class="detail-card__title" dir="rtl">سفارش از یاران‌دریان ونک</h2>
+            </div>
+            <div class="divider"><span></span></div>
+
+            <div class="sec sec--not-awaiting detail-card__address">
+              <p class="t-prominent-xs" dir="rtl">ارسال به خانه</p>
+              <p class="t-subtle-xs" dir="rtl">ونک، ملاصدرا، شیخ‌بهایی، نبش لادن، پلاک ۸۵</p>
+            </div>
+            <div class="sec sec--not-awaiting divider"><span></span></div>
+
+            <div class="summary">
+              <div class="thumbs">
+                <span class="thumb"><img src="assets/fe1bf.png" alt="" /></span>
+                <span class="thumb"><img src="assets/439ee.png" alt="" /></span>
+                <span class="thumb"><img src="assets/82c4a.png" alt="" /></span>
+                <span class="thumb"><img src="assets/03140.png" alt="" /></span>
+                <span class="thumb"><img src="assets/857be.png" alt="" /></span>
+                <span class="thumb thumb--more" dir="rtl">+۲</span>
+              </div>
+              <div class="payment">
+                <p class="t-subtle-xs" dir="rtl">مبلغ پرداختی</p>
+                <p class="payment__amount" dir="rtl">۵,۳۶۲,۰۰۰ تومان</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Recommendation slider (awaiting only) -->
+          <section class="sec sec--awaiting reco" id="reco">
+            <div class="reco__head">
+              <h3 class="t-prominent-sm" dir="rtl">چیزی جا نمونده؟</h3>
+              <p class="t-subtle-sm" dir="rtl">تا قبل از تأیید فروشگاه به همین سفارش اضافه می‌شود.</p>
+            </div>
+            <div class="reco__viewport">
+              <div class="reco__track" id="recoTrack"></div>
+            </div>
+            <div class="reco__dots" id="recoDots" role="tablist" aria-label="صفحه‌های پیشنهاد"></div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
