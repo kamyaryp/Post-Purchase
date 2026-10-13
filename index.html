@@ -6,7 +6,7 @@
   <title>Post-Purchase</title>
   <link rel="icon" type="image/png" href="assets/favicon.png" />
   <link rel="apple-touch-icon" href="assets/favicon.png" />
-  <link rel="stylesheet" href="styles.css?v=9e5de5d" />
+  <link rel="stylesheet" href="styles.css?v=10" />
 </head>
 <body>
   <!-- Prototype controls (not part of the design) -->
@@ -201,14 +201,7 @@
                   </button>
                 </nav>
 
-                <!-- Awaiting: delivery address + cancel -->
-                <div class="sec sec--awaiting address-row">
-                  <button class="btn btn--icon" aria-label="ویرایش آدرس"><img src="assets/f0bd6.svg" alt="" /></button>
-                  <div class="address-row__text">
-                    <p class="t-prominent-sm" dir="rtl">ارسال به خانه</p>
-                    <p class="t-subtle-sm" dir="rtl">ونک، ملاصدرا، شیخ‌بهایی، نبش لادن، پلاک ۸۵</p>
-                  </div>
-                </div>
+                <!-- Awaiting: cancel -->
                 <div class="sec sec--awaiting actions-section">
                   <div class="divider divider--bleed"><span></span></div>
                   <button class="btn btn--negative">
@@ -236,6 +229,18 @@
             </div>
           </section>
 
+          <!-- Recommendation slider (awaiting only) -->
+          <section class="sec sec--awaiting reco" id="reco">
+            <div class="reco__head">
+              <h3 class="t-prominent-sm" dir="rtl">چیزی جا نمونده؟</h3>
+              <p class="t-subtle-sm" dir="rtl">تا قبل از تأیید فروشگاه به همین سفارش اضافه می‌شود.</p>
+            </div>
+            <div class="reco__viewport">
+              <div class="reco__track" id="recoTrack"></div>
+            </div>
+            <div class="reco__dots" id="recoDots" role="tablist" aria-label="صفحه‌های پیشنهاد"></div>
+          </section>
+
           <!-- Order detail card -->
           <section class="detail-card" id="detailCard">
             <div class="detail-card__header">
@@ -247,6 +252,16 @@
               <h2 class="detail-card__title" dir="rtl">سفارش از یاران‌دریان ونک</h2>
             </div>
             <div class="divider"><span></span></div>
+
+            <!-- Awaiting: editable delivery address -->
+            <div class="sec sec--awaiting address-row">
+              <button class="btn btn--icon" aria-label="ویرایش آدرس"><img src="assets/f0bd6.svg" alt="" /></button>
+              <div class="address-row__text">
+                <p class="t-prominent-sm" dir="rtl">ارسال به خانه</p>
+                <p class="t-subtle-sm" dir="rtl">ونک، ملاصدرا، شیخ‌بهایی، نبش لادن، پلاک ۸۵</p>
+              </div>
+            </div>
+            <div class="sec sec--awaiting divider"><span></span></div>
 
             <div class="sec sec--not-awaiting detail-card__address">
               <p class="t-prominent-xs" dir="rtl">ارسال به خانه</p>
@@ -270,22 +285,11 @@
             </div>
           </section>
 
-          <!-- Recommendation slider (awaiting only) -->
-          <section class="sec sec--awaiting reco" id="reco">
-            <div class="reco__head">
-              <h3 class="t-prominent-sm" dir="rtl">چیزی جا نمونده؟</h3>
-              <p class="t-subtle-sm" dir="rtl">تا قبل از تأیید فروشگاه به همین سفارش اضافه می‌شود.</p>
-            </div>
-            <div class="reco__viewport">
-              <div class="reco__track" id="recoTrack"></div>
-            </div>
-            <div class="reco__dots" id="recoDots" role="tablist" aria-label="صفحه‌های پیشنهاد"></div>
-          </section>
         </div>
       </div>
     </div>
   </main>
 
-  <script src="app.js?v=9e5de5d"></script>
+  <script src="app.js?v=10"></script>
 </body>
 </html>
