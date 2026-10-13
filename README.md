@@ -6,7 +6,9 @@ A clickable, front-end-only prototype of the post-purchase order tracking flow (
 
 ## What it shows
 
-Five order states, each with its own status card, map and animations:
+It opens on **Address confirmation**: a 10-second window to check the delivery address before the order is submitted ("تغییر آدرس" restarts it). When it ends, a soft fade sweeps through the circle while the map is revealed behind the page at the same height, and the circle settles into the countdown badge as the tracking cards rise in.
+
+Then five order states, each with its own status card, map and animations:
 
 | State | Map |
 |---|---|
@@ -20,7 +22,7 @@ Five order states, each with its own status card, map and animations:
 - Click a step in the progress indicator (or use the **State** dropdown at the top left) to jump to that state.
 - Scroll up at the top to tuck the cards away and see the map full-screen; scroll down to bring them back.
 - `?speed=60` in the URL runs the timeline 60× faster for demos, e.g. `index.html?speed=60#awaiting`.
-- `#awaiting`, `#preparing`, `#finding`, `#out`, `#delivered` open a state directly.
+- No hash or `#confirm` starts at address confirmation; `#awaiting`, `#preparing`, `#finding`, `#out`, `#delivered` open a state directly.
 
 ## Files
 

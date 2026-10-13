@@ -60,7 +60,8 @@
 
   /* ---------- clock ---------- */
   let clock = { e: 0, t: performance.now() };
-  const elapsed = () => Math.min(TOTAL, clock.e + ((performance.now() - clock.t) / 1000) * SPEED);
+  let clockPaused = false;             // the countdown waits while the address is being confirmed
+  const elapsed = () => clockPaused ? clock.e : Math.min(TOTAL, clock.e + ((performance.now() - clock.t) / 1000) * SPEED);
 
   /* ---------- bars (with smooth tween on jumps) ---------- */
   let shown = [0, 0, 0];
@@ -110,13 +111,13 @@
   }
 
   function applyState(name) {
-    stateSelect.value = name;
+    if (!confirmFlow.active) stateSelect.value = name;
     current = name;
     device.dataset.state = name;
     title.textContent = TITLES[name];
     illImg.src = `assets/${ILL[name]}`;
     $$("[data-go]").forEach((b) => b.setAttribute("aria-current", b.dataset.go === name ? "step" : "false"));
-    if (history.replaceState) history.replaceState(null, "", location.search + `#${name}`);
+    if (history.replaceState && !confirmFlow.active) history.replaceState(null, "", location.search + `#${name}`);
     reco.toggle(name === "awaiting");
     radarBlips(name === "finding");
   }
@@ -205,6 +206,8 @@
 
   /* ---------- jump to a state (progress indicator) ---------- */
   function jump(name) {
+    if (name === "confirm") { confirmFlow.start(); return; }
+    confirmFlow.cancel();
     clock = { e: START[name], t: performance.now() };
     transition(name);
   }
@@ -555,11 +558,136 @@
     };
   })();
 
+  /* ------------------------------------------------------------------
+   * Address confirmation: 10 s to check the address before the order is
+   * submitted. The ring drains over those 10 s; "تغییر آدرس" restarts it.
+   * Then the transition into "awaiting":
+   *   1. a soft white fade sweeps down inside the circle (the map there
+   *      fades out) while, level with it, the page background fades away
+   *      and the full map appears behind — one edge moving through both;
+   *   2. the title and address card fade out, the circle shrinks into the
+   *      countdown badge while the tracking cards rise into place.
+   * ------------------------------------------------------------------ */
+  const confirmFlow = (() => {
+    const layer = $("#confirm");
+    const circle = $("#confirmCircle");
+    const arc = $("#confirmArc");
+    const title = $(".confirm__title");
+    const card = $(".confirm__card");
+    const contentEl = $("#content");
+    const appbar = $(".appbar");
+    const WINDOW_MS = 10000;
+    let t0 = 0, raf = 0, phase = "off";
+    const ease = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+
+    function setWipe(px) {
+      layer.style.setProperty("--wipe", `${px.toFixed(1)}px`);
+    }
+    function reset() {
+      cancelAnimationFrame(raf);
+      [circle, title, card, contentEl, appbar].forEach((el) => el.getAnimations().forEach((a) => a.cancel()));
+      setWipe(-80);
+      arc.setAttribute("stroke-dasharray", "1 2");
+      arc.style.opacity = "";
+      circle.style.transform = "";
+    }
+    function start() {
+      reset();
+      phase = "waiting";
+      api.active = true;
+      layer.hidden = false;
+      device.classList.add("is-intro", "is-intro-badge");
+      // tracking screen waits behind, at the start of "awaiting"
+      clock = { e: 0, t: performance.now() };
+      clockPaused = true;
+      transition("awaiting", { instant: true });
+      requestAnimationFrame(() => sheet.init());
+      stateSelect.value = "confirm";
+      if (history.replaceState) history.replaceState(null, "", location.search + "#confirm");
+      t0 = performance.now();
+      raf = requestAnimationFrame(tick);
+    }
+    function tick(now) {
+      if (phase !== "waiting") return;
+      const p = clamp01((now - t0) / WINDOW_MS);
+      arc.setAttribute("stroke-dasharray", `${Math.max(0.0001, 1 - p).toFixed(4)} 2`);
+      if (p >= 1) { reveal(); return; }
+      raf = requestAnimationFrame(tick);
+    }
+    $("#confirmChange").addEventListener("click", () => { if (phase === "waiting") t0 = performance.now(); });
+
+    function reveal() {
+      phase = "reveal";
+      arc.style.opacity = "0";
+      const H = layer.clientHeight;
+      const cTop = circle.getBoundingClientRect().top - layer.getBoundingClientRect().top;
+      layer.style.setProperty("--circle-top", `${cTop}px`);
+      const from = -80, to = H + 10, dur = 1300, s = performance.now();
+      const step = (now) => {
+        if (phase !== "reveal") return;
+        const p = clamp01((now - s) / dur);
+        setWipe(from + (to - from) * ease(p));
+        if (p < 1) raf = requestAnimationFrame(step); else settle();
+      };
+      raf = requestAnimationFrame(step);
+    }
+
+    function settle() {
+      phase = "settle";
+      // where the badge will be once the cards are in place
+      const L = layer.getBoundingClientRect();
+      const b = $("#badge").getBoundingClientRect();
+      const c = circle.getBoundingClientRect();
+      const dx = (b.left + b.width / 2) - (c.left + c.width / 2);
+      const dy = (b.top + b.height / 2) - (c.top + c.height / 2);
+      const k = b.width / c.width;
+      const D = 650, EASE = "cubic-bezier(0.2, 0.8, 0.2, 1)";
+
+      title.animate({ opacity: [1, 0], transform: ["none", "translateY(10px)"] }, { duration: 260, easing: "ease-in", fill: "forwards" });
+      card.animate({ opacity: [1, 0], transform: ["none", "translateY(16px)"] }, { duration: 300, easing: "ease-in", fill: "forwards" });
+      circle.animate({ transform: ["none", `translate(${dx}px, ${dy}px) scale(${k})`] }, { duration: D, delay: 120, easing: EASE, fill: "forwards" });
+      device.classList.remove("is-intro");
+      contentEl.animate({ opacity: [0, 1], transform: ["translateY(60px)", "none"] }, { duration: D, delay: 120, easing: EASE, fill: "backwards" });
+      appbar.animate({ opacity: [0, 1] }, { duration: 400, delay: 300, fill: "backwards" });
+
+      setTimeout(() => {
+        device.classList.remove("is-intro-badge");
+        layer.animate({ opacity: [1, 0] }, { duration: 220, fill: "forwards" }).finished.then(finish);
+      }, D + 140);
+      void L;
+    }
+    function finish() {
+      phase = "off";
+      api.active = false;
+      layer.hidden = true;
+      layer.getAnimations().forEach((a) => a.cancel());
+      reset();
+      clock = { e: 0, t: performance.now() };
+      clockPaused = false;
+      stateSelect.value = "awaiting";
+      if (history.replaceState) history.replaceState(null, "", location.search + "#awaiting");
+    }
+    function cancel() {
+      if (!api.active) return;
+      phase = "off";
+      api.active = false;
+      reset();
+      layer.hidden = true;
+      layer.getAnimations().forEach((a) => a.cancel());
+      device.classList.remove("is-intro", "is-intro-badge");
+      clockPaused = false;
+    }
+    const api = { active: false, start, cancel };
+    return api;
+  })();
+
   /* ---------- boot ---------- */
-  const initial = START[location.hash.slice(1)] !== undefined ? location.hash.slice(1) : "awaiting";
+  const hash = location.hash.slice(1);
+  const initial = START[hash] !== undefined ? hash : "awaiting";
   clock = { e: START[initial], t: performance.now() };
   transition(initial, { instant: true });
   renderBars(elapsed());
   sheet.init();
   requestAnimationFrame(frame);
+  if (START[hash] === undefined) confirmFlow.start();   // no state in the URL (or #confirm) → start at address confirmation
 })();
