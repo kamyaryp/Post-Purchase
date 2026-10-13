@@ -686,7 +686,7 @@
       arc.style.opacity = "";
       arc.animate({ strokeDasharray: ["0.0001 2", "1 2"], opacity: [0, 1, 1], offset: [0, 0.1, 1] }, { duration: D, easing: GLIDE, fill: "forwards" });
       // cards rise in, one after another, from slightly below
-      [$(".status-card__content"), $("#detailCard"), $("#reco")].forEach((el, i) =>
+      [$(".status-card__content"), $("#reco"), $("#detailCard")].forEach((el, i) =>
         el.animate({ opacity: [0, 1], transform: ["translateY(70px)", "none"] }, { duration: D + 80, delay: i * 55, easing: GLIDE, fill: "backwards" }));
       appbar.animate({ opacity: [0, 1], transform: ["translateY(-6px)", "none"] }, { duration: 420, delay: 180, easing: GLIDE, fill: "backwards" });
 
