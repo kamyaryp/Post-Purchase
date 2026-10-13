@@ -429,20 +429,20 @@ p, h1, h2, h3 { text-align: right; font-weight: inherit; }
 @media (max-width: 430px) { .proto-controls { top: auto; bottom: 12px; left: 12px; } .state-picker span { display: none; } }
 
 /* ---------- Address confirmation (before "awaiting") ---------- */
-.confirm { position: absolute; inset: 0; z-index: 20; --page: -100%; --circ: 160px; }
+.confirm { position: absolute; inset: 0; z-index: 20; --band: 840px; --page: -840px; --circ: 840px; }
 .confirm[hidden] { display: none; }
 .confirm__bg {
   position: absolute; inset: 0;
   background: linear-gradient(to bottom, #fde6eb 0%, #f9f0ee 70%, var(--surface-terra-secondary) 100%);
   /* reveal edge: above it the page shows the map, below it the pink background */
   /* a screen-tall fade band slides down: above it the map behind shows through */
-  -webkit-mask-image: linear-gradient(to bottom, transparent var(--page), #000 calc(var(--page) + 100%));
-  mask-image: linear-gradient(to bottom, transparent var(--page), #000 calc(var(--page) + 100%));
+  -webkit-mask-image: linear-gradient(to bottom, transparent var(--page), #000 calc(var(--page) + var(--band)));
+  mask-image: linear-gradient(to bottom, transparent var(--page), #000 calc(var(--page) + var(--band)));
 }
 .confirm__status { position: relative; }
 .confirm__content {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  width: 358px; max-width: calc(100% - 32px);
+  width: 358px; max-width: 100%; padding: 0 16px;   /* Figma: 358 frame, 16px side padding → 326px card */
   display: flex; flex-direction: column; align-items: center; gap: 32px;
 }
 .confirm__circle { position: relative; width: 160px; height: 160px; flex-shrink: 0; transform-origin: 50% 50%; }
@@ -453,7 +453,8 @@ p, h1, h2, h3 { text-align: right; font-weight: inherit; }
 .confirm__wipe {
   position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
   /* the reverse: a circle-tall white fade rises up through the circle and hides its map */
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) var(--circ), #fff calc(var(--circ) + 160px));
+  /* same screen-tall band as the page (in screen space), moving the opposite way */
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) calc(var(--circ) - var(--circle-top, 0px)), #fff calc(var(--circ) - var(--circle-top, 0px) + var(--band)));
 }
 .confirm__ring { position: absolute; left: -2.5px; top: -2.5px; width: 165px; height: 165px; overflow: visible; }
 .confirm__title { font-weight: 700; font-size: 23px; line-height: 36px; text-align: center; }
@@ -464,7 +465,13 @@ p, h1, h2, h3 { text-align: right; font-weight: inherit; }
 }
 .confirm__text { display: flex; flex-direction: column; gap: 8px; }
 .confirm__text p { text-align: center; }
-.confirm__change { width: 100%; padding: 0 8px; }
+.confirm__change { flex: none; width: 100%; height: 44px; padding: 0 8px; }
+
+/* badge contents of "awaiting", drawn at 160/130 so they land 1:1 when the circle shrinks into the badge */
+.confirm__next { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.confirm__next-inner { display: flex; flex-direction: column; align-items: center; gap: 6px; transform: scale(1.2308); }
+.confirm__next-ill { width: 53.301px; height: 40px; object-fit: cover; opacity: 0; transform: scale(0); }
+.confirm__next-timer { font-weight: 700; font-size: 23px; line-height: 36px; font-variant-numeric: tabular-nums; opacity: 0; transform: scale(0); }
 
 /* while the intro plays, the tracking screen shows only the map */
 .device.is-intro .content, .device.is-intro .appbar { opacity: 0; }
