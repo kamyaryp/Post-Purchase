@@ -580,16 +580,24 @@
     let t0 = 0, raf = 0, phase = "off";
     const ease = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
 
-    function setWipe(px) {
-      layer.style.setProperty("--wipe", `${px.toFixed(1)}px`);
+    const pin = $(".confirm__pin");
+    const badge = $("#badge");
+    const badgeIll = $("#badgeIll"), badgeTimer = $("#badgeTimer");
+    const badgeArcSvg = $(".badge__arc"), badgeTrack = $(".badge__track");
+    // p = 0 … 1 drives both fades together. Page: a screen-tall fade band slides
+    // down and reveals the map. Circle: the reverse, a circle-tall white band
+    // rises and hides its map. At p = .5 both match the Figma mid frame.
+    function setWipe(p) {
+      layer.style.setProperty("--page", `${(-100 + 200 * p).toFixed(2)}%`);
+      layer.style.setProperty("--circ", `${(160 - 320 * p).toFixed(1)}px`);
     }
-    function reset() {
+    function reset(keepBadge = false) {
       cancelAnimationFrame(raf);
-      [circle, title, card, contentEl, appbar].forEach((el) => el.getAnimations().forEach((a) => a.cancel()));
-      setWipe(-80);
-      arc.setAttribute("stroke-dasharray", "1 2");
+      [circle, title, card, contentEl, appbar, pin, arc, layer, ...(keepBadge ? [] : [badge, badgeIll, badgeTimer, badgeArcSvg, badgeTrack])]
+        .forEach((el) => el.getAnimations().forEach((a) => a.cancel()));
+      setWipe(0);
       arc.style.opacity = "";
-      circle.style.transform = "";
+      arc.setAttribute("stroke-dasharray", "1 2");
     }
     function start() {
       reset();
@@ -611,57 +619,65 @@
       if (phase !== "waiting") return;
       const p = clamp01((now - t0) / WINDOW_MS);
       arc.setAttribute("stroke-dasharray", `${Math.max(0.0001, 1 - p).toFixed(4)} 2`);
-      if (p >= 1) { reveal(); return; }
+      if (p >= 1) { arc.style.opacity = "0"; reveal(); return; }   // empty ring: hide the round-cap dot
       raf = requestAnimationFrame(tick);
     }
     $("#confirmChange").addEventListener("click", () => { if (phase === "waiting") t0 = performance.now(); });
 
+    const EASE = "cubic-bezier(0.2, 0.8, 0.2, 1)";
+    const SPRING = "cubic-bezier(0.34, 1.45, 0.64, 1)";
+
+    /* 1 — the fades (map out of the circle, map onto the page); the home pin
+       shrinks away while the white rises over it */
     function reveal() {
       phase = "reveal";
-      arc.style.opacity = "0";
-      const H = layer.clientHeight;
-      const cTop = circle.getBoundingClientRect().top - layer.getBoundingClientRect().top;
-      layer.style.setProperty("--circle-top", `${cTop}px`);
-      const from = -80, to = H + 10, dur = 1300, s = performance.now();
+      const dur = 1400, s = performance.now();
+      pin.animate({ transform: ["scale(1)", "scale(1.08)", "scale(0)"], opacity: [1, 1, 0], offset: [0, 0.25, 1] },
+        { duration: 620, delay: 380, easing: "cubic-bezier(.5,0,.75,0)", fill: "forwards" });
+      title.animate({ opacity: [1, 0], transform: ["none", "translateY(8px)"] }, { duration: 420, delay: 700, easing: "ease-in", fill: "forwards" });
+      card.animate({ opacity: [1, 0], transform: ["none", "translateY(24px) scale(.98)"] }, { duration: 460, delay: 760, easing: "ease-in", fill: "forwards" });
       const step = (now) => {
         if (phase !== "reveal") return;
         const p = clamp01((now - s) / dur);
-        setWipe(from + (to - from) * ease(p));
+        setWipe(ease(p));
         if (p < 1) raf = requestAnimationFrame(step); else settle();
       };
       raf = requestAnimationFrame(step);
     }
 
+    /* 2 — the white circle travels into the badge's place while the cards
+       rise; the ring refills to the order countdown; then the store
+       illustration and the countdown grow out of the badge */
     function settle() {
       phase = "settle";
-      // where the badge will be once the cards are in place
-      const L = layer.getBoundingClientRect();
-      const b = $("#badge").getBoundingClientRect();
+      const b = badge.getBoundingClientRect();
       const c = circle.getBoundingClientRect();
       const dx = (b.left + b.width / 2) - (c.left + c.width / 2);
       const dy = (b.top + b.height / 2) - (c.top + c.height / 2);
       const k = b.width / c.width;
-      const D = 650, EASE = "cubic-bezier(0.2, 0.8, 0.2, 1)";
+      const D = 700;
 
-      title.animate({ opacity: [1, 0], transform: ["none", "translateY(10px)"] }, { duration: 260, easing: "ease-in", fill: "forwards" });
-      card.animate({ opacity: [1, 0], transform: ["none", "translateY(16px)"] }, { duration: 300, easing: "ease-in", fill: "forwards" });
-      circle.animate({ transform: ["none", `translate(${dx}px, ${dy}px) scale(${k})`] }, { duration: D, delay: 120, easing: EASE, fill: "forwards" });
       device.classList.remove("is-intro");
-      contentEl.animate({ opacity: [0, 1], transform: ["translateY(60px)", "none"] }, { duration: D, delay: 120, easing: EASE, fill: "backwards" });
-      appbar.animate({ opacity: [0, 1] }, { duration: 400, delay: 300, fill: "backwards" });
+      circle.animate({ transform: ["none", `translate(${dx}px, ${dy}px) scale(${k})`] }, { duration: D, easing: EASE, fill: "forwards" });
+      arc.style.opacity = "";
+      arc.animate({ strokeDasharray: ["0.0001 2", "1 2"], opacity: [0, 1, 1], offset: [0, 0.15, 1] }, { duration: D, easing: EASE, fill: "forwards" });
+      contentEl.animate({ opacity: [0, 1], transform: ["translateY(90px)", "none"] }, { duration: D, easing: EASE, fill: "backwards" });
+      appbar.animate({ opacity: [0, 1], transform: ["translateY(-6px)", "none"] }, { duration: 450, delay: 250, easing: EASE, fill: "backwards" });
 
       setTimeout(() => {
+        // hand over to the real badge: same size, same place, empty inside
         device.classList.remove("is-intro-badge");
-        layer.animate({ opacity: [1, 0] }, { duration: 220, fill: "forwards" }).finished.then(finish);
-      }, D + 140);
-      void L;
+        layer.animate({ opacity: [1, 0] }, { duration: 160, fill: "forwards" }).finished.then(finish);
+        badgeTrack.animate({ opacity: [0, 1] }, { duration: 300, fill: "backwards" });
+        badgeIll.animate({ transform: ["scale(0)", "scale(1)"], opacity: [0, 1] }, { duration: 560, easing: SPRING, fill: "backwards" });
+        badgeTimer.animate({ transform: ["scale(0)", "scale(1)"], opacity: [0, 1] }, { duration: 560, delay: 90, easing: SPRING, fill: "backwards" });
+      }, D);
     }
     function finish() {
       phase = "off";
       api.active = false;
       layer.hidden = true;
-      layer.getAnimations().forEach((a) => a.cancel());
-      reset();
+      reset(true);                         // let the badge finish growing its contents
       clock = { e: 0, t: performance.now() };
       clockPaused = false;
       stateSelect.value = "awaiting";
