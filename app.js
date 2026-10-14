@@ -213,6 +213,7 @@
   }
   $$("[data-go]").forEach((btn) => btn.addEventListener("click", () => jump(btn.dataset.go)));
   stateSelect.addEventListener("change", () => jump(stateSelect.value));
+  document.getElementById("iterationSelect").addEventListener("change", (ev) => { location.href = ev.target.value; });
 
   // Keyboard: ← / → step through the flow (RTL: left = forward)
   document.addEventListener("keydown", (e) => {
