@@ -46,6 +46,8 @@
   const setHref = (el, url) => { el.setAttribute("href", url); el.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", url); };
   // clear glass: flat in the middle, bending the map gently inwards right at the rim
   setHref($("#gLensMap"), dispMap((r) => (r < 46 ? 0 : -Math.pow(Math.min(1, (r - 46) / 14), 2))));
+  // red glass: a faint magnification across the band
+  setHref($("#gLensMapRed"), dispMap((r) => -Math.max(-1, Math.min(1, (r - 52) / 8))));
 
   // keep the map drawn inside the gauge exactly over the real map behind it
   const maps = $$(".gmap", gauge);
