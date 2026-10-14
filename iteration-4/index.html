@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="fa">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Post-Purchase</title>
+  <link rel="icon" type="image/png" href="../assets/favicon.png" />
+  <link rel="apple-touch-icon" href="../assets/favicon.png" />
+  <link rel="stylesheet" href="../styles.css?v=11" />
+  <link rel="stylesheet" href="i4.css?v=1" />
+</head>
+<body>
+  <!-- Prototype controls (not part of the design) -->
+  <div class="proto-controls">
+    <label class="state-picker">
+      <span>Iteration</span>
+      <select id="iterationSelect" aria-label="Design iteration">
+        <option value="../">3</option>
+        <option value="./" selected>4</option>
+      </select>
+    </label>
+    <label class="state-picker">
+      <span>Time</span>
+      <input class="scrub" id="scrub" type="range" min="0" max="2700" step="1" value="0" aria-label="Countdown position" />
+    </label>
+  </div>
+
+  <main class="device" id="device" data-state="awaiting">
+
+    <!-- Fixed map -->
+    <div class="map" id="map" aria-hidden="true">
+      <img class="map__img" src="../assets/2225c.png" alt="" />
+      <div class="map__pin"><img src="../assets/50343.svg" alt="" /></div>
+    </div>
+
+    <!-- Fixed header: phone status bar + back button -->
+    <header class="header">
+      <div class="statusbar">
+        <span class="statusbar__time">19:02</span>
+        <img class="statusbar__icons" src="../assets/f9908.svg" alt="" />
+      </div>
+      <div class="appbar">
+        <button class="btn btn--elevated btn--icon" aria-label="بازگشت"><img src="../assets/de76c.svg" alt="" /></button>
+      </div>
+    </header>
+
+    <div class="scroller" id="scroller">
+      <div class="screen">
+        <div class="sheet-spacer" id="sheetSpacer" aria-hidden="true"></div>
+        <div class="sheet-snap" id="sheetSnap" aria-hidden="true"></div>
+
+        <div class="content" id="content">
+          <div class="sheet-fade" aria-hidden="true"></div>
+
+          <!-- Order status card -->
+          <section class="g-card" aria-live="polite">
+
+            <!-- Glassy countdown: frosted recessed track, raised centre, glossy pink arc -->
+            <div class="gauge" id="gauge" role="timer" aria-label="زمان باقی‌مانده">
+              <svg class="gauge__svg" viewBox="0 0 120 120" aria-hidden="true">
+                <defs>
+                  <linearGradient id="gArc" x1="58.7" y1="8.4" x2="67.6" y2="112.4" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF3564"/><stop offset="0.48" stop-color="#ED1944"/><stop offset="1" stop-color="#D90F4F"/>
+                  </linearGradient>
+                  <!-- soft light the arc spills into the frosted track -->
+                  <filter id="gGlow" x="-60" y="-60" width="240" height="240" filterUnits="userSpaceOnUse"><feGaussianBlur stdDeviation="9"/></filter>
+                  <!-- raised centre: drop shadow + white inner light + 1px softening -->
+                  <filter id="gCenter" x="0" y="0" width="120" height="120" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                    <feFlood flood-opacity="0" result="bg"/>
+                    <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="a"/>
+                    <feOffset dy="2"/><feGaussianBlur stdDeviation="2"/>
+                    <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0"/>
+                    <feBlend in2="bg" result="drop"/>
+                    <feBlend in="SourceGraphic" in2="drop" result="shape"/>
+                    <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="b"/>
+                    <feOffset dy="4"/><feGaussianBlur stdDeviation="6"/>
+                    <feComposite in2="b" operator="arithmetic" k2="-1" k3="1"/>
+                    <feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+                    <feBlend in2="shape" result="lit"/>
+                    <feGaussianBlur stdDeviation="1"/>
+                  </filter>
+                  <filter id="gEdge" x="0" y="0" width="120" height="120" filterUnits="userSpaceOnUse"><feGaussianBlur stdDeviation="2"/></filter>
+                </defs>
+
+                <g class="gauge__glows" filter="url(#gGlow)">
+                  <ellipse id="glowHead" rx="4.54" ry="3.31" fill="#F73B68"/>
+                  <ellipse id="glowTail" rx="6.73" ry="3.31" fill="#F73B68"/>
+                </g>
+                <circle class="gauge__center" cx="60" cy="60" r="44" fill="#FAF9FB" filter="url(#gCenter)"/>
+                <circle id="gaugeArc" class="gauge__arc" cx="60" cy="60" r="52" pathLength="1" fill="none"
+                        stroke="url(#gArc)" stroke-opacity="0.8" stroke-width="16" stroke-linecap="round"
+                        stroke-dasharray="0.625 2" transform="rotate(-90 60 60)"/>
+                <!-- the arc's soft shadow on the raised centre -->
+                <circle id="gaugeEdge" class="gauge__edge" cx="60" cy="60" r="44" pathLength="1" fill="none"
+                        stroke="#000" stroke-opacity="0.21" stroke-width="1" stroke-linecap="round"
+                        stroke-dasharray="0.625 2" transform="rotate(-90 60 60)" filter="url(#gEdge)"/>
+              </svg>
+              <span class="gauge__time" id="gaugeTime">۴۴:۵۹</span>
+            </div>
+
+            <div class="g-card__content">
+              <img class="g-card__top" src="../assets/bf6d7.svg" alt="" />
+              <div class="g-card__body">
+                <h1 class="g-card__title" dir="rtl">در انتظار تأیید فروشگاه</h1>
+                <div class="g-actions" dir="rtl">
+                  <button class="g-pill g-pill--lime">
+                    <svg width="10.8" height="12" viewBox="0 0 10.8 12" aria-hidden="true"><path fill="#305218" d="M5.40297 0C7.01094 0 8.3329 1.26355 8.4 2.86459H8.38432C8.3862 2.91113 8.37726 2.95748 8.35819 3H8.45187C9.18208 3 9.94671 3.50611 10.2533 4.72788L10.2866 4.87204L10.748 8.58884C11.08 10.9594 9.78298 11.9564 8.01372 11.9986L7.89508 12H2.92112C1.12307 12 -0.262473 11.3448 0.0421685 8.75013L0.0629428 8.58884L0.529584 4.87204C0.759684 3.55631 1.53217 3.03735 2.27647 3.00196L2.35903 3H2.40593C2.39802 2.95521 2.39802 2.90939 2.40593 2.86459C2.47303 1.26355 3.795 0 5.40297 0ZM3.6582 4.99757C3.36534 4.99757 3.12792 5.24193 3.12792 5.54336C3.12792 5.84479 3.36534 6.08915 3.6582 6.08915C3.95106 6.08915 4.18847 5.84479 4.18847 5.54336L4.18434 5.4749C4.15162 5.20578 3.92853 4.99757 3.6582 4.99757ZM7.13149 4.99757C6.83863 4.99757 6.60122 5.24193 6.60122 5.54336C6.60122 5.84479 6.83863 6.08915 7.13149 6.08915C7.42435 6.08915 7.66176 5.84479 7.66176 5.54336C7.66176 5.24193 7.42435 4.99757 7.13149 4.99757ZM5.37945 0.781431C4.22498 0.781431 3.2891 1.71409 3.2891 2.86459C3.29701 2.90939 3.29701 2.95521 3.2891 3H7.49593C7.47923 2.95677 7.47038 2.91092 7.4698 2.86459C7.4698 1.71409 6.53392 0.781431 5.37945 0.781431Z"/></svg>
+                    <span>ویرایش سبد</span>
+                  </button>
+                  <button class="g-pill">
+                    <svg width="10.2" height="12" viewBox="0 0 10.2 12" aria-hidden="true"><path fill="#000" d="M5.09607 0C7.89367 0 10.2 2.23073 10.2 4.99065C10.2 6.38141 9.6942 7.67258 8.8617 8.76695C7.94328 9.97411 6.81129 11.0259 5.53713 11.8515C5.24551 12.0423 4.98232 12.0567 4.66227 11.8515C3.38084 11.0259 2.24885 9.97411 1.3383 8.76695C0.50519 7.67258 0 6.38141 0 4.99065C0 2.23073 2.30633 0 5.09607 0ZM5.09607 3.4661C4.17099 3.4661 3.41654 4.22868 3.41654 5.14605C3.41654 6.07062 4.17099 6.7978 5.09607 6.7978C6.02174 6.7978 6.78346 6.07062 6.78346 5.14605C6.78346 4.22868 6.02174 3.4661 5.09607 3.4661Z"/></svg>
+                    <span>تغییر آدرس</span>
+                  </button>
+                  <button class="g-pill g-pill--red">
+                    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path fill="#C21035" fill-rule="evenodd" clip-rule="evenodd" d="M8.12983 7.47016L7.47691 8.12308L5.99937 6.64678L4.52245 8.12124L3.87015 7.46831L5.34645 5.99447L3.87015 4.51878L4.52307 3.86584L5.99999 5.34216L7.47753 3.86707L8.12983 4.52063L6.65291 5.99447L8.12983 7.47016ZM5.99999 0C2.69169 0 0 2.69169 0 6.00001C0 9.30831 2.69169 12 5.99999 12C9.30829 12 12 9.30831 12 6.00001C12 2.69169 9.30829 0 5.99999 0Z"/></svg>
+                    <span>لغو سفارش</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Recommendation slider -->
+          <section class="sec sec--awaiting reco" id="reco">
+            <div class="reco__head">
+              <h3 class="t-prominent-sm" dir="rtl">چیزی جا نمونده؟</h3>
+              <p class="t-subtle-sm" dir="rtl">تا قبل از تأیید فروشگاه به همین سفارش اضافه می‌شود.</p>
+            </div>
+            <div class="reco__viewport"><div class="reco__track" id="recoTrack"></div></div>
+            <div class="reco__dots" id="recoDots" role="tablist" aria-label="صفحه‌های پیشنهاد"></div>
+          </section>
+
+          <!-- Order detail card -->
+          <section class="detail-card">
+            <div class="detail-card__header">
+              <button class="btn btn--sm">
+                <span class="btn__label" dir="rtl">جزئیات/ویرایش</span>
+                <img class="btn__icon20" src="../assets/18fa3.svg" alt="" />
+              </button>
+              <h2 class="detail-card__title" dir="rtl">سفارش از یاران‌دریان ونک</h2>
+            </div>
+            <div class="divider"><span></span></div>
+            <div class="sec sec--awaiting address-row">
+              <button class="btn btn--icon" aria-label="ویرایش آدرس"><img src="../assets/f0bd6.svg" alt="" /></button>
+              <div class="address-row__text">
+                <p class="t-prominent-sm" dir="rtl">ارسال به خانه</p>
+                <p class="t-subtle-sm" dir="rtl">ونک، ملاصدرا، شیخ‌بهایی، نبش لادن، پلاک ۸۵</p>
+              </div>
+            </div>
+            <div class="sec sec--awaiting divider"><span></span></div>
+            <div class="summary">
+              <div class="thumbs">
+                <span class="thumb"><img src="../assets/fe1bf.png" alt="" /></span>
+                <span class="thumb"><img src="../assets/439ee.png" alt="" /></span>
+                <span class="thumb"><img src="../assets/82c4a.png" alt="" /></span>
+                <span class="thumb"><img src="../assets/03140.png" alt="" /></span>
+                <span class="thumb"><img src="../assets/857be.png" alt="" /></span>
+                <span class="thumb thumb--more" dir="rtl">+۲</span>
+              </div>
+              <div class="payment">
+                <p class="t-subtle-xs" dir="rtl">مبلغ پرداختی</p>
+                <p class="payment__amount" dir="rtl">۵,۳۶۲,۰۰۰ تومان</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="i4.js?v=1"></script>
+</body>
+</html>
