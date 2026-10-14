@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" href="../assets/favicon.png" />
   <link rel="apple-touch-icon" href="../assets/favicon.png" />
   <link rel="stylesheet" href="../styles.css?v=11" />
-  <link rel="stylesheet" href="i4.css?v=5" />
+  <link rel="stylesheet" href="i4.css?v=6" />
 </head>
 <body>
   <!-- Prototype controls (not part of the design) -->
@@ -78,8 +78,14 @@
                   <linearGradient id="gArc" x1="58.7" y1="8.4" x2="67.6" y2="112.4" gradientUnits="userSpaceOnUse">
                     <stop stop-color="#FF3564"/><stop offset="0.48" stop-color="#ED1944"/><stop offset="1" stop-color="#D90F4F"/>
                   </linearGradient>
+                  <!-- liquid ends: blur + alpha threshold, so when the two ends of the arc come
+                       close they reach for each other and fuse, and stretch apart before letting go -->
+                  <filter id="gGoo" x="0" y="0" width="120" height="120" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="3.2" result="b"/>
+                    <feColorMatrix in="b" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 22 -10"/>
+                  </filter>
                   <mask id="gArcMask" maskUnits="userSpaceOnUse" x="0" y="0" width="120" height="120">
-                    <circle class="arcdash" cx="60" cy="60" r="52" pathLength="1" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round" stroke-dasharray="1 2" transform="rotate(-90 60 60)"/>
+                    <circle filter="url(#gGoo)" class="arcdash" cx="60" cy="60" r="52" pathLength="1" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round" stroke-dasharray="1 2" transform="rotate(-90 60 60)"/>
                   </mask>
                   <filter id="gLift" x="0" y="0" width="120" height="125" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
                     <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity="0.07"/>
@@ -192,6 +198,6 @@
     </div>
   </main>
 
-  <script src="i4.js?v=5"></script>
+  <script src="i4.js?v=6"></script>
 </body>
 </html>
