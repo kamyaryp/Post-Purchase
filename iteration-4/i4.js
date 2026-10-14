@@ -22,13 +22,50 @@
 
   /* ---------- glassy gauge ---------- */
   const gauge = $("#gauge");
-  const arc = $("#gaugeArc");
-  const edge = $("#gaugeEdge");
+  const dashes = $$(".arcdash", gauge);
   const timeEl = $("#gaugeTime");
   const head = $("#glowHead");
   const tail = $("#glowTail");
   const C = 60;
-  // put a glow on the ring at `deg` (clockwise from 12 o'clock), stretched along the ring
+
+  // Refraction maps for feDisplacementMap: R/G encode where each pixel samples
+  // the map from (0.5 = no shift). Built once on a canvas.
+  function dispMap(offset) {
+    const N = 240, cv = document.createElement("canvas");
+    cv.width = cv.height = N;
+    const ctx = cv.getContext("2d"), img = ctx.createImageData(N, N);
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const dx = (x + 0.5) / 2 - C, dy = (y + 0.5) / 2 - C, r = Math.hypot(dx, dy) || 1;
+      const o = offset(r);                                      // + = sample further out, − = further in
+      const i = (y * N + x) * 4;
+      img.data[i] = 128 + 127 * Math.max(-1, Math.min(1, o * dx / r));
+      img.data[i + 1] = 128 + 127 * Math.max(-1, Math.min(1, o * dy / r));
+      img.data[i + 2] = 128; img.data[i + 3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+    return cv.toDataURL();
+  }
+  const setHref = (el, url) => { el.setAttribute("href", url); el.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", url); };
+  // clear lens: flat in the middle, bending the map inwards towards the rim
+  setHref($("#gLensMap"), dispMap((r) => (r < 34 ? 0 : -Math.pow(Math.min(1, (r - 34) / 26), 2.2))));
+  // red glass tube: magnifies across its width (samples pulled towards the centre line)
+  setHref($("#gTubeMap"), dispMap((r) => -Math.max(-1, Math.min(1, (r - 52) / 8)) * 0.9));
+
+  // keep the map drawn inside the gauge exactly over the real map behind it
+  const maps = $$(".gmap", gauge);
+  const mapImg = $("#map .map__img");
+  let lastBox = "";
+  function alignMap() {
+    const m = mapImg.getBoundingClientRect(), g = gauge.getBoundingClientRect();
+    const k = 120 / g.width;
+    const box = [(m.left - g.left) * k, (m.top - g.top) * k, m.width * k, m.height * k].map((v) => v.toFixed(1));
+    const key = box.join();
+    if (key === lastBox) return;
+    lastBox = key;
+    maps.forEach((im) => { im.setAttribute("x", box[0]); im.setAttribute("y", box[1]); im.setAttribute("width", box[2]); im.setAttribute("height", box[3]); });
+  }
+
+  // a glow on the ring at `deg` (clockwise from 12 o'clock), stretched along it
   const place = (el, deg, r) => {
     const a = (deg * Math.PI) / 180;
     el.setAttribute("transform", `translate(${(C + r * Math.sin(a)).toFixed(2)} ${(C - r * Math.cos(a)).toFixed(2)}) rotate(${deg.toFixed(2)})`);
@@ -42,14 +79,14 @@
     shown += Math.abs(d) > 0.01 ? d * 0.12 : d;          // jumps glide, the countdown tracks the clock
     if (Math.abs(shown - set) > 0.0002) {
       set = shown;
-      const p = Math.max(0.0001, shown).toFixed(4);
-      arc.setAttribute("stroke-dasharray", `${p} 2`);
-      edge.setAttribute("stroke-dasharray", `${p} 2`);
+      const p = `${Math.max(0.0001, shown).toFixed(4)} 2`;
+      dashes.forEach((c) => c.setAttribute("stroke-dasharray", p));
       place(tail, shown * 360 + 5, 51);                  // …and past its moving end
       gauge.classList.toggle("is-done", shown < 0.002);
     }
     const sec = Math.max(0, Math.ceil(TOTAL - e) - 1);
     if (sec !== lastSec) { timeEl.textContent = fmt(sec); lastSec = sec; }
+    alignMap();
   }
 
   /* ---------- prototype controls ---------- */
