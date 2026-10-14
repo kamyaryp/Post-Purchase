@@ -71,9 +71,9 @@
     shown += Math.abs(d) > 0.01 ? d * 0.12 : d;          // jumps glide, the countdown tracks the clock
     if (Math.abs(shown - set) > 0.0002) {
       set = shown;
-      const p = `${Math.max(0.0001, shown).toFixed(4)} 2`;
+      const p = `${Math.max(0.001, shown).toFixed(4)} 2`;
       dashes.forEach((c) => c.setAttribute("stroke-dasharray", p));
-      gauge.classList.toggle("is-empty", shown < 0.002);
+      gauge.classList.toggle("is-empty", target <= 0);  // the red shows from the very first second
     }
     const sec = Math.max(0, Math.ceil(TOTAL - e) - 1);
     if (sec !== lastSec) { timeEl.textContent = fmt(sec); lastSec = sec; }
