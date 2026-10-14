@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" href="../assets/favicon.png" />
   <link rel="apple-touch-icon" href="../assets/favicon.png" />
   <link rel="stylesheet" href="../styles.css?v=11" />
-  <link rel="stylesheet" href="i4.css?v=3" />
+  <link rel="stylesheet" href="i4.css?v=5" />
 </head>
 <body>
   <!-- Prototype controls (not part of the design) -->
@@ -68,6 +68,13 @@
                     <feGaussianBlur stdDeviation="1.4"/>
                     <feComponentTransfer><feFuncR type="linear" slope="0.94" intercept="0.07"/><feFuncG type="linear" slope="0.94" intercept="0.07"/><feFuncB type="linear" slope="0.94" intercept="0.075"/></feComponentTransfer>
                   </filter>
+                  <!-- map seen through the red glass: very slightly bent, darkened so the red stays rich -->
+                  <filter id="gLensRed" x="-10" y="-10" width="140" height="140" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                    <feImage id="gLensMapRed" x="0" y="0" width="120" height="120" preserveAspectRatio="none" result="d"/>
+                    <feDisplacementMap in="SourceGraphic" in2="d" scale="8" xChannelSelector="R" yChannelSelector="G"/>
+                    <feGaussianBlur stdDeviation="0.8"/>
+                    <feComponentTransfer><feFuncR type="linear" slope="1.4" intercept="-0.6"/><feFuncG type="linear" slope="1.4" intercept="-0.6"/><feFuncB type="linear" slope="1.4" intercept="-0.6"/></feComponentTransfer>
+                  </filter>
                   <linearGradient id="gArc" x1="58.7" y1="8.4" x2="67.6" y2="112.4" gradientUnits="userSpaceOnUse">
                     <stop stop-color="#FF3564"/><stop offset="0.48" stop-color="#ED1944"/><stop offset="1" stop-color="#D90F4F"/>
                   </linearGradient>
@@ -95,8 +102,9 @@
 
                 <!-- 2 · progress arc (clean, slightly translucent) with a hairline highlight on its outer edge -->
                 <g class="gauge__arc">
-                  <circle class="arcdash" cx="60" cy="60" r="52" pathLength="1" fill="none" stroke="url(#gArc)" stroke-opacity="0.92" stroke-width="16" stroke-linecap="round" stroke-dasharray="1 2" transform="rotate(-90 60 60)"/>
                   <g mask="url(#gArcMask)">
+                    <image class="gmap" href="../assets/2225c.png" preserveAspectRatio="xMidYMid slice" filter="url(#gLensRed)"/>
+                    <rect width="120" height="120" fill="url(#gArc)" opacity="0.9"/>
                     <circle cx="60" cy="60" r="59.2" fill="none" stroke="#fff" stroke-opacity="0.35" stroke-width="0.8"/>
                   </g>
                 </g>
@@ -184,6 +192,6 @@
     </div>
   </main>
 
-  <script src="i4.js?v=3"></script>
+  <script src="i4.js?v=5"></script>
 </body>
 </html>
