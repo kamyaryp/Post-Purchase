@@ -5,32 +5,35 @@
 /* ---------- Status card ---------- */
 .g-card { position: relative; display: flex; flex-direction: column; align-items: center; }
 
-/* Glassy countdown gauge: 120px frosted, recessed track */
+/* Glassy countdown gauge: 120px clear-glass disc over the map (drawn in the SVG) */
 .gauge {
   position: relative; z-index: 2;
   width: 120px; height: 120px; flex: none;
   margin-bottom: -26px;
-  border-radius: 140px;
+  border-radius: 50%;
   overflow: hidden;
-  background: rgba(248, 246, 249, 0.2);
-  -webkit-backdrop-filter: blur(12px) saturate(1.15);
-  backdrop-filter: blur(12px) saturate(1.15);
+  isolation: isolate;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.10), 0 2px 4px rgba(0, 0, 0, 0.06);
 }
-/* recessed rim: dark lip at the bottom, light catch at the top (sits above everything) */
+/* recessed glass: shade under the top lip, light along the bottom, thin bright edge */
 .gauge::after {
   content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-  box-shadow: inset 0 -1.5px 4px rgba(0, 0, 0, 0.2), inset 0 2px 6px #fff;
+  box-shadow:
+    inset 0 4px 9px rgba(0, 0, 0, 0.14),
+    inset 0 -2px 4px rgba(255, 255, 255, 0.6),
+    inset 0 0 0 0.75px rgba(255, 255, 255, 0.6);
 }
-.gauge__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.gauge__svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .gauge__glows { animation: g-breathe 2.8s ease-in-out infinite; }
-@keyframes g-breathe { 0%, 100% { opacity: .8; } 50% { opacity: 1; } }
+@keyframes g-breathe { 0%, 100% { opacity: .75; } 50% { opacity: 1; } }
 .gauge__time {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
   font-weight: 700; font-size: 23px; line-height: 36px;
   font-variant-numeric: tabular-nums;
 }
-.gauge.is-done .gauge__arc, .gauge.is-done .gauge__edge, .gauge.is-done .gauge__glows { opacity: 0; transition: opacity .4s var(--ease-smart); }
+.gauge__arc, .gauge__light { transition: opacity .4s var(--ease-smart); }
+.gauge.is-done .gauge__arc, .gauge.is-done .gauge__light { opacity: 0; }
 
 /* card */
 .g-card__content { width: 100%; border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; }
