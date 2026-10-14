@@ -34,4 +34,7 @@ Then five order states, each with its own status card, map and animations:
 
 ## Iterations
 
-Current: **Iteration 3** (selector at the top left; earlier/later iterations will be added).
+- **Iteration 3** – the full flow (`index.html`).
+- **Iteration 4** – a single page focused on the glassy countdown gauge (`iteration-4/`). The **Time** slider at the top left scrubs the countdown; `?speed=60` runs it faster.
+
+Switch between them with the **Iteration** selector at the top left.
