@@ -1,0 +1,57 @@
+/* Iteration 4 — glassy countdown (Figma 171:6524). Shared styles come from ../styles.css */
+
+.appbar { min-height: 60px; }
+
+/* ---------- Status card ---------- */
+.g-card { position: relative; display: flex; flex-direction: column; align-items: center; }
+
+/* Glassy countdown gauge: 120px frosted, recessed track */
+.gauge {
+  position: relative; z-index: 2;
+  width: 120px; height: 120px; flex: none;
+  margin-bottom: -26px;
+  border-radius: 140px;
+  overflow: hidden;
+  background: rgba(248, 246, 249, 0.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.15);
+  backdrop-filter: blur(12px) saturate(1.15);
+}
+/* recessed rim: dark lip at the bottom, light catch at the top (sits above everything) */
+.gauge::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  box-shadow: inset 0 -1.5px 4px rgba(0, 0, 0, 0.2), inset 0 2px 6px #fff;
+}
+.gauge__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.gauge__glows { animation: g-breathe 2.8s ease-in-out infinite; }
+@keyframes g-breathe { 0%, 100% { opacity: .8; } 50% { opacity: 1; } }
+.gauge__time {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 23px; line-height: 36px;
+  font-variant-numeric: tabular-nums;
+}
+.gauge.is-done .gauge__arc, .gauge.is-done .gauge__edge, .gauge.is-done .gauge__glows { opacity: 0; transition: opacity .4s var(--ease-smart); }
+
+/* card */
+.g-card__content { width: 100%; border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; }
+.g-card__top { width: 100%; height: 37px; }
+.g-card__body { background: #fff; padding: 16px; display: flex; flex-direction: column; gap: 16px; align-items: center; }
+.g-card__title { width: 100%; text-align: center; font-weight: 700; font-size: 19px; line-height: 30px; }
+
+.g-actions { display: flex; gap: 8px; width: 100%; }
+.g-pill {
+  position: relative; flex: 1 0 0; min-width: 1px; height: 32px; padding: 0 6px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  border-radius: 999px; border: 1px solid var(--border-secondary); background: var(--surface-secondary);
+  font-weight: 500; font-size: 11px; line-height: 16px; color: #000; white-space: nowrap;
+  transition: transform .15s var(--ease-smart);
+}
+.g-pill::after { content: ""; position: absolute; inset: -1px; border-radius: inherit; box-shadow: var(--shadow-btn-outline); pointer-events: none; }
+.g-pill:active { transform: scale(.97); }
+.g-pill span { padding-bottom: 2px; }
+.g-pill svg { flex: none; }
+.g-pill--red { border-color: var(--red-300); background: var(--surface-negative-light); color: #c21035; }
+.g-pill--lime { border-color: #add71d; background: var(--lime-100); color: #305218; }
+
+/* prototype time scrubber */
+.scrub { width: 194px; accent-color: #ed1944; cursor: pointer; }
