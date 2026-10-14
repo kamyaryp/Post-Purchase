@@ -3,7 +3,7 @@
 
   /* ------------------------------------------------------------------
    * Iteration 4 — glassy countdown (single page: awaiting confirmation)
-   * A 45-minute countdown; the arc drains with it over a clear glass ring.
+   * A 45-minute countdown; the arc fills up as time passes, over a clear glass ring.
    * ?speed=60 runs it 60× faster.
    * ------------------------------------------------------------------ */
   const TOTAL = 45 * 60;
@@ -65,7 +65,7 @@
 
   let shown = null, set = -1, lastSec = -1;
   function renderGauge(e) {
-    const target = (TOTAL - e) / TOTAL;
+    const target = e / TOTAL;                            // progress: fills from empty to a full ring
     if (shown === null) shown = target;
     const d = target - shown;
     shown += Math.abs(d) > 0.01 ? d * 0.12 : d;          // jumps glide, the countdown tracks the clock
@@ -73,7 +73,7 @@
       set = shown;
       const p = `${Math.max(0.0001, shown).toFixed(4)} 2`;
       dashes.forEach((c) => c.setAttribute("stroke-dasharray", p));
-      gauge.classList.toggle("is-done", shown < 0.002);
+      gauge.classList.toggle("is-empty", shown < 0.002);
     }
     const sec = Math.max(0, Math.ceil(TOTAL - e) - 1);
     if (sec !== lastSec) { timeEl.textContent = fmt(sec); lastSec = sec; }
