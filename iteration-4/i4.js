@@ -3,8 +3,8 @@
 
   /* ------------------------------------------------------------------
    * Iteration 4 — glassy countdown (single page: awaiting confirmation)
-   * A 45-minute countdown; the glossy pink arc drains with it and its soft
-   * glows follow the arc's two ends. ?speed=60 runs it 60× faster.
+   * A 45-minute countdown; the arc drains with it over a clear glass ring.
+   * ?speed=60 runs it 60× faster.
    * ------------------------------------------------------------------ */
   const TOTAL = 45 * 60;
   const SPEED = Math.max(0.1, Number(new URLSearchParams(location.search).get("speed")) || 1);
@@ -24,8 +24,6 @@
   const gauge = $("#gauge");
   const dashes = $$(".arcdash", gauge);
   const timeEl = $("#gaugeTime");
-  const head = $("#glowHead");
-  const tail = $("#glowTail");
   const C = 60;
 
   // Refraction maps for feDisplacementMap: R/G encode where each pixel samples
@@ -46,10 +44,8 @@
     return cv.toDataURL();
   }
   const setHref = (el, url) => { el.setAttribute("href", url); el.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", url); };
-  // clear lens: flat in the middle, bending the map inwards towards the rim
-  setHref($("#gLensMap"), dispMap((r) => (r < 34 ? 0 : -Math.pow(Math.min(1, (r - 34) / 26), 2.2))));
-  // red glass tube: magnifies across its width (samples pulled towards the centre line)
-  setHref($("#gTubeMap"), dispMap((r) => -Math.max(-1, Math.min(1, (r - 52) / 8)) * 0.9));
+  // clear glass: flat in the middle, bending the map gently inwards right at the rim
+  setHref($("#gLensMap"), dispMap((r) => (r < 46 ? 0 : -Math.pow(Math.min(1, (r - 46) / 14), 2))));
 
   // keep the map drawn inside the gauge exactly over the real map behind it
   const maps = $$(".gmap", gauge);
@@ -65,12 +61,6 @@
     maps.forEach((im) => { im.setAttribute("x", box[0]); im.setAttribute("y", box[1]); im.setAttribute("width", box[2]); im.setAttribute("height", box[3]); });
   }
 
-  // a glow on the ring at `deg` (clockwise from 12 o'clock), stretched along it
-  const place = (el, deg, r) => {
-    const a = (deg * Math.PI) / 180;
-    el.setAttribute("transform", `translate(${(C + r * Math.sin(a)).toFixed(2)} ${(C - r * Math.cos(a)).toFixed(2)}) rotate(${deg.toFixed(2)})`);
-  };
-  place(head, -7.5, 51.6);                               // light spilling past the arc's start
   let shown = null, set = -1, lastSec = -1;
   function renderGauge(e) {
     const target = (TOTAL - e) / TOTAL;
@@ -81,7 +71,6 @@
       set = shown;
       const p = `${Math.max(0.0001, shown).toFixed(4)} 2`;
       dashes.forEach((c) => c.setAttribute("stroke-dasharray", p));
-      place(tail, shown * 360 + 5, 51);                  // …and past its moving end
       gauge.classList.toggle("is-done", shown < 0.002);
     }
     const sec = Math.max(0, Math.ceil(TOTAL - e) - 1);
