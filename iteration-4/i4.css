@@ -31,7 +31,7 @@
   font-variant-numeric: tabular-nums;
 }
 .gauge__arc { transition: opacity .4s var(--ease-smart); }
-.gauge.is-done .gauge__arc { opacity: 0; }
+.gauge.is-empty .gauge__arc { opacity: 0; }
 
 /* card */
 .g-card__content { width: 100%; border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; }
