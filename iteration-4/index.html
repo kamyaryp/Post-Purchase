@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" href="../assets/favicon.png" />
   <link rel="apple-touch-icon" href="../assets/favicon.png" />
   <link rel="stylesheet" href="../styles.css?v=11" />
-  <link rel="stylesheet" href="i4.css?v=12" />
+  <link rel="stylesheet" href="i4.css?v=13" />
 </head>
 <body>
   <!-- Prototype controls (not part of the design) -->
@@ -39,7 +39,11 @@
         <span class="statusbar__time">19:02</span>
         <img class="statusbar__icons" src="../assets/f9908.svg" alt="" />
       </div>
-      <div class="appbar">
+      <div class="appbar appbar--split">
+        <button class="btn btn--elevated btn--support">
+          <span class="btn__label" dir="rtl">پشتیبانی</span>
+          <img src="../assets/e1d41.svg" alt="" />
+        </button>
         <button class="btn btn--elevated btn--icon" aria-label="بازگشت"><img src="../assets/de76c.svg" alt="" /></button>
       </div>
     </header>
@@ -131,7 +135,10 @@
             <div class="g-card__content">
               <img class="g-card__top" src="../assets/i4-top.svg" alt="" />
               <div class="g-card__body">
-                <h1 class="g-card__title" dir="rtl">در انتظار تأیید فروشگاه</h1>
+                <h1 class="g-card__title" dir="rtl">
+                  <span class="g-card__icon" id="statusIcon" aria-hidden="true"></span>
+                  <span>در انتظار تأیید فروشگاه</span>
+                </h1>
                 <div class="g-actions" dir="rtl">
                   <button class="g-act g-act--lime"><span class="g-act__glass"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="24" height="24" viewBox="20 20 24 24" fill="none"> <path d="M43.5439 24.9356C43.1008 24.3448 42.4239 23.9879 41.6855 24.0126L25.046 24.1479L24.2829 20.8988C24.1845 20.4804 23.803 20.185 23.3845 20.185H20.923C20.4184 20.185 20 20.5911 20 21.108C20 21.6249 20.4184 22.0311 20.923 22.0311H22.6461L25.7475 35.1384C26.1414 36.8122 27.6428 37.969 29.3289 37.969C29.4397 37.969 29.5505 37.969 29.6612 37.969L38.2025 37.1814C39.8271 37.0337 41.1686 35.926 41.6486 34.3753L43.9008 26.9909C44.11 26.2771 43.987 25.5387 43.5439 24.9479V24.9356ZM31.692 33.1938C31.692 33.1938 31.5689 33.2061 31.5196 33.2061C31.0766 33.2061 30.6951 32.8984 30.6089 32.4554L29.9812 29.1939C29.8951 28.6893 30.2151 28.2093 30.7197 28.1109C31.2243 28.0247 31.7043 28.3447 31.8027 28.8493L32.4304 32.1108C32.5165 32.6031 32.1966 33.0954 31.692 33.1938ZM36.8118 32.1969C36.7256 32.64 36.3441 32.9477 35.9134 32.9477C35.8518 32.9477 35.7903 32.9477 35.7288 32.9354C35.2365 32.8369 34.9042 32.3569 35.0026 31.8523L35.6303 28.5909C35.7164 28.0986 36.2087 27.7663 36.701 27.8647C37.2056 27.9509 37.5379 28.4432 37.4395 28.9355L36.8118 32.1969ZM29.6736 42.3012C29.6736 43.1381 28.9966 43.815 28.1598 43.815C27.3229 43.815 26.646 43.1381 26.646 42.3012C26.646 41.4643 27.3229 40.7874 28.1598 40.7874C28.9966 40.7874 29.6736 41.4643 29.6736 42.3012ZM41.0086 42.3012C41.0086 43.1381 40.3317 43.815 39.4948 43.815C38.6579 43.815 37.981 43.1381 37.981 42.3012C37.981 41.4643 38.6579 40.7874 39.4948 40.7874C40.3317 40.7874 41.0086 41.4643 41.0086 42.3012Z" fill-rule="evenodd" clip-rule="evenodd" fill="url(#ig-cart)"/> <defs><linearGradient id="ig-cart" x1="32" y1="20.185" x2="32" y2="43.815" gradientUnits="userSpaceOnUse"><stop stop-color="#6B9A1F"/><stop offset="1" stop-color="#305218"/></linearGradient></defs> </svg></span><span class="g-act__label">ویرایش سبد</span></button>
                   <button class="g-act g-act--grey"><span class="g-act__glass"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="24" height="24" viewBox="20 20 24 24" fill="none"> <path d="M31.988 20C37.5807 20 42.2012 24.4645 42.2012 29.9852C42.2012 32.7696 41.1931 35.3499 39.5249 37.5341C37.6887 39.9464 35.4204 42.0467 32.8761 43.7029C32.288 44.0869 31.772 44.1109 31.1239 43.7029C28.5556 42.0467 26.2993 39.9464 24.4751 37.5341C22.8069 35.3499 21.7988 32.7576 21.7988 29.9852C21.7988 24.4645 26.4073 20 31.988 20ZM31.988 26.9368C30.1398 26.9368 28.6276 28.461 28.6276 30.2973C28.6276 32.1335 30.1398 33.5977 31.988 33.5977C33.8362 33.5977 35.3604 32.1455 35.3604 30.2973C35.3604 28.449 33.8362 26.9368 31.988 26.9368Z" fill-rule="evenodd" clip-rule="evenodd" fill="url(#ig-address)"/> <g clip-path="url(#ic-address)"><path d="M31.988 20C37.5807 20 42.2012 24.4645 42.2012 29.9852C42.2012 32.7696 41.1931 35.3499 39.5249 37.5341C37.6887 39.9464 35.4204 42.0467 32.8761 43.7029C32.288 44.0869 31.772 44.1109 31.1239 43.7029C28.5556 42.0467 26.2993 39.9464 24.4751 37.5341C22.8069 35.3499 21.7988 32.7576 21.7988 29.9852C21.7988 24.4645 26.4073 20 31.988 20ZM31.988 26.9368C30.1398 26.9368 28.6276 28.461 28.6276 30.2973C28.6276 32.1335 30.1398 33.5977 31.988 33.5977C33.8362 33.5977 35.3604 32.1455 35.3604 30.2973C35.3604 28.449 33.8362 26.9368 31.988 26.9368Z" fill-rule="evenodd" fill="#000" filter="url(#ii-address)"/></g> <defs> <linearGradient id="ig-address" x1="32" y1="20" x2="32" y2="44" gradientUnits="userSpaceOnUse"><stop stop-color="#717374"/><stop offset="1" stop-color="#404449"/></linearGradient> <clipPath id="ic-address"><path d="M31.988 20C37.5807 20 42.2012 24.4645 42.2012 29.9852C42.2012 32.7696 41.1931 35.3499 39.5249 37.5341C37.6887 39.9464 35.4204 42.0467 32.8761 43.7029C32.288 44.0869 31.772 44.1109 31.1239 43.7029C28.5556 42.0467 26.2993 39.9464 24.4751 37.5341C22.8069 35.3499 21.7988 32.7576 21.7988 29.9852C21.7988 24.4645 26.4073 20 31.988 20ZM31.988 26.9368C30.1398 26.9368 28.6276 28.461 28.6276 30.2973C28.6276 32.1335 30.1398 33.5977 31.988 33.5977C33.8362 33.5977 35.3604 32.1455 35.3604 30.2973C35.3604 28.449 33.8362 26.9368 31.988 26.9368Z" fill-rule="evenodd" clip-rule="evenodd"/></clipPath> <!-- Figma's two inner shadows (white 30% from the top, black 30% from the bottom) drawn as their own      layer and clipped by the vector shape, so the icon's edge stays sharp --> <filter id="ii-address" x="16" y="14" width="32" height="36" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"> <feOffset in="SourceAlpha" dy="2"/><feGaussianBlur stdDeviation="4" result="b1"/> <feComposite in="b1" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1"/> <feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.3 0" result="s1"/> <feOffset in="SourceAlpha" dy="-2"/><feGaussianBlur stdDeviation="4" result="b2"/> <feComposite in="b2" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1"/> <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.3 0" result="s2"/> <feMerge><feMergeNode in="s1"/><feMergeNode in="s2"/></feMerge> </filter> </defs> </svg></span><span class="g-act__label">تغییر آدرس</span></button>
@@ -189,6 +196,8 @@
     </div>
   </main>
 
-  <script src="i4.js?v=9"></script>
+  <script src="../vendor/lottie_light.min.js"></script>
+  <script src="../assets/lottie/status-awaiting.js"></script>
+  <script src="i4.js?v=10"></script>
 </body>
 </html>
