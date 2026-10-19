@@ -70,6 +70,22 @@
 .g-act--red  .g-act__glass { --fill: #fde7e6; --stroke: #fcb5b5; }
 .g-act--grey .g-act__glass { --fill: #f5f5f5; --stroke: #d6d6d6; }
 .g-act--lime .g-act__glass { --fill: #f0f9d3; --stroke: #add71d; }
+/* ---------- icon style variants (prototype toggle: Icons → 2D / 3D colorful / 3D neutral) ---------- */
+.g-act__3d { display: none; position: relative; width: 56px; height: 56px; overflow: hidden; }
+.g-act__3d img { position: absolute; max-width: none; }
+.g-act--cancel  .g-act__3d { transform: scaleX(-1); }                          /* mirrored in Figma */
+.g-act--cancel  .g-act__3d img { left: 11.72%; top: 11.72%; width: 76.56%; height: 76.56%; }
+.g-act--address .g-act__3d img { left: -6.23%; top: -6.23%; width: 112.46%; height: 112.46%; }
+.g-act--cart    .g-act__3d img { left: 4.12%;  top: 4.12%;  width: 91.76%; height: 91.76%; }
+[data-icons^="3d"] .g-act__glass svg { display: none; }
+[data-icons^="3d"] .g-act__3d { display: block; }
+/* 3D · colorful: soft tinted circles (Figma 203:10204) */
+[data-icons="3d-color"] .g-act--cancel  .g-act__glass { --fill: #fef4f4; --stroke: #fdd2d1; }
+[data-icons="3d-color"] .g-act--address .g-act__glass { --fill: #f2f9f4; --stroke: #c5e4ce; }
+[data-icons="3d-color"] .g-act--cart    .g-act__glass { --fill: #fffaeb; --stroke: #ffe38a; }
+/* 3D · neutral: all grey circles (Figma 203:10499) */
+[data-icons="3d-neutral"] .g-act .g-act__glass { --fill: #f5f5f5; --stroke: #d6d6d6; }
+
 .g-act__label { font-weight: 500; font-size: 11px; line-height: 16px; color: #000; white-space: nowrap; }
 
 /* prototype time scrubber */

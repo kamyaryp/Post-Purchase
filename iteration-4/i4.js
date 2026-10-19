@@ -86,6 +86,19 @@
   scrub.addEventListener("input", () => { scrubbing = true; setElapsed(Number(scrub.value)); });
   scrub.addEventListener("change", () => { scrubbing = false; });
   $("#iterationSelect").addEventListener("change", (ev) => { location.href = ev.target.value; });
+  // icon style toggle — remembered (and shareable with ?icons=2d|3d-color|3d-neutral)
+  const iconSelect = $("#iconSelect");
+  const ICONS = ["2d", "3d-color", "3d-neutral"];
+  const setIcons = (v) => {
+    if (!ICONS.includes(v)) v = "2d";
+    device.dataset.icons = v; iconSelect.value = v;
+    try { localStorage.setItem("pp-icons", v); } catch (e) {}
+    const u = new URL(location.href); u.searchParams.set("icons", v); history.replaceState(null, "", u);
+  };
+  let savedIcons = new URLSearchParams(location.search).get("icons");
+  if (!savedIcons) { try { savedIcons = localStorage.getItem("pp-icons"); } catch (e) {} }
+  setIcons(savedIcons || "2d");
+  iconSelect.addEventListener("change", () => setIcons(iconSelect.value));
 
   const reco = (() => {
     const pages = [
