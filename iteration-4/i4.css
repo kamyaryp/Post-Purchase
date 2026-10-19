@@ -39,12 +39,44 @@
 .g-card__body { background: #fff; padding: 8px 16px 24px; display: flex; flex-direction: column; gap: 16px; align-items: center; }
 .g-card__title { width: 100%; text-align: center; font-weight: 700; font-size: 15px; line-height: 24px; }
 
-/* round actions: 64px button, label underneath */
+/* round actions: 64px glass buttons, label underneath.
+   Same glass language as the countdown: a softly tinted, slightly convex body,
+   a light catch along the top, a bright hairline edge (top-left), a faint
+   shade along the bottom and a soft lift off the card. */
 .g-actions { display: flex; gap: 24px; align-items: center; justify-content: center; width: 100%; }
 .g-act { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 64px; }
-.g-act img { width: 64px; height: 64px; border-radius: 50%; transition: transform .15s var(--ease-smart); }
-.g-act:active img { transform: scale(.94); }
-.g-act span { font-weight: 500; font-size: 11px; line-height: 16px; color: #525252; white-space: nowrap; }
+.g-act__glass {
+  --tint-top: #fff; --tint: #f5f5f5; --tint-low: #ececec; --edge: rgba(0, 0, 0, 0.08);
+  position: relative; display: grid; place-items: center;
+  width: 64px; height: 64px; border-radius: 50%;
+  background:
+    radial-gradient(120% 90% at 50% 0%, var(--tint-top) 0%, rgba(255, 255, 255, 0) 58%),
+    linear-gradient(180deg, var(--tint) 0%, var(--tint-low) 100%);
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.07),
+    0 1.5px 3px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 0.5px var(--edge),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.04),
+    inset 0 2px 3px rgba(255, 255, 255, 0.9);
+  transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), box-shadow .25s ease;
+}
+/* specular hairline: bright at the top-left, fading, a little light again at the bottom-right */
+.g-act__glass::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%; padding: 1px; pointer-events: none;
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.1) 40%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.6) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+.g-act__glass img { width: 24px; height: 24px; filter: drop-shadow(0 1px 0.5px rgba(255, 255, 255, 0.8)); }
+.g-act:active .g-act__glass {
+  transform: scale(.94);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 0.5px var(--edge), inset 0 -2px 5px rgba(0, 0, 0, 0.05), inset 0 2px 3px rgba(255, 255, 255, 0.9);
+}
+.g-act--red   .g-act__glass { --tint-top: #fff7f7; --tint: #fdeceb; --tint-low: #fbd9d8; --edge: rgba(237, 25, 68, 0.22); }
+.g-act--grey  .g-act__glass { --tint-top: #ffffff; --tint: #f6f6f6; --tint-low: #e9e9e9; --edge: rgba(0, 0, 0, 0.10); }
+.g-act--lime  .g-act__glass { --tint-top: #fbfef2; --tint: #f2fadb; --tint-low: #e2f2b4; --edge: rgba(122, 170, 20, 0.30); }
+.g-act__label { font-weight: 500; font-size: 11px; line-height: 16px; color: #525252; white-space: nowrap; }
 
 /* prototype time scrubber */
 .scrub { width: 194px; accent-color: #ed1944; cursor: pointer; }
