@@ -100,6 +100,20 @@
   setIcons(savedIcons || "2d");
   iconSelect.addEventListener("change", () => setIcons(iconSelect.value));
 
+  // support entry point toggle — same mechanics (?support=top-button|top-icon|bottom-button|bottom-card)
+  const supportSelect = $("#supportSelect");
+  const SUPPORT = ["top-button", "top-icon", "bottom-button", "bottom-card"];
+  const setSupport = (v) => {
+    if (!SUPPORT.includes(v)) v = "top-button";
+    device.dataset.support = v; supportSelect.value = v;
+    try { localStorage.setItem("pp-support", v); } catch (e) {}
+    const u = new URL(location.href); u.searchParams.set("support", v); history.replaceState(null, "", u);
+  };
+  let savedSupport = new URLSearchParams(location.search).get("support");
+  if (!savedSupport) { try { savedSupport = localStorage.getItem("pp-support"); } catch (e) {} }
+  setSupport(savedSupport || "top-button");
+  supportSelect.addEventListener("change", () => setSupport(supportSelect.value));
+
   const reco = (() => {
     const pages = [
       ["e0420.png", "b617c.png", "bd56c.png"],

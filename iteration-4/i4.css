@@ -88,5 +88,39 @@
 
 .g-act__label { font-weight: 500; font-size: 11px; line-height: 16px; color: #000; white-space: nowrap; }
 
+/* ---------- support entry point variants (prototype toggle: Support) ---------- */
+.sup-top { display: contents; }
+.sup-top--icon, .sup-bottom-button, .sup-card { display: none; }
+[data-support="top-icon"] .sup-top--button { display: none; }
+[data-support="top-icon"] .sup-top--icon { display: inline-flex; }
+[data-support^="bottom"] .sup-top > * { visibility: hidden; }          /* keeps the back button on the right */
+[data-support="bottom-button"] .sup-bottom-button { display: inline-flex; }
+[data-support="bottom-card"] .sup-card { display: flex; }
+
+/* bottom button: secondary, full width (Figma 205:11518) */
+.sup-bottom-button { width: 100%; padding: 0 8px; gap: 0; }
+.sup-bottom-button img { width: 24px; height: 24px; }
+
+/* extended support card (Figma 206:12303) */
+.sup-card {
+  flex-direction: column; gap: 24px; padding: 16px;
+  background: rgba(255, 255, 255, 0.7); border-radius: 24px;
+}
+.sup-card__title { font-weight: 700; font-size: 15px; line-height: 24px; text-align: right; }
+.sup-card__rows { display: flex; flex-direction: column; gap: 8px; }
+.sup-row {
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px;
+  background: var(--surface-terra-secondary); border-radius: 16px; text-align: right;
+  transition: transform .15s var(--ease-smart);
+}
+.sup-row:active { transform: scale(.98); }
+.sup-row__tile { width: 40px; height: 40px; flex: none; }
+.sup-row__text { flex: 1 0 0; min-width: 1px; display: flex; flex-direction: column; gap: 2px; }
+.sup-row__title { font-weight: 700; font-size: 13px; line-height: 20px; color: #000; }
+.sup-row__sub { font-size: 11px; line-height: 16px; color: #999; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sup-row__chev { width: 24px; height: 24px; flex: none; }
+.sup-card__cta { width: 100%; padding: 0 8px; color: #fff; }
+.sup-card__cta-icon { width: 24px; height: 24px; }
+
 /* prototype time scrubber */
 .scrub { width: 194px; accent-color: #ed1944; cursor: pointer; }
