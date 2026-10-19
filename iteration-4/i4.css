@@ -50,14 +50,13 @@
   position: relative; display: grid; place-items: center;
   width: 64px; height: 64px; border-radius: 50%;
   background:
-    radial-gradient(120% 90% at 50% 0%, var(--tint-top) 0%, rgba(255, 255, 255, 0) 58%),
+    radial-gradient(110% 80% at 50% 0%, var(--tint-top) 0%, rgba(255, 255, 255, 0) 55%),
     linear-gradient(180deg, var(--tint) 0%, var(--tint-low) 100%);
   box-shadow:
-    0 6px 14px rgba(0, 0, 0, 0.07),
-    0 1.5px 3px rgba(0, 0, 0, 0.08),
-    inset 0 0 0 0.5px var(--edge),
-    inset 0 -3px 6px rgba(0, 0, 0, 0.04),
-    inset 0 2px 3px rgba(255, 255, 255, 0.9);
+    0 2px 5px rgba(0, 0, 0, 0.04),
+    inset 0 0 0 1px var(--edge),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.025),
+    inset 0 4px 8px rgba(255, 255, 255, 0.7);
   transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), box-shadow .25s ease;
 }
 /* specular hairline: bright at the top-left, fading, a little light again at the bottom-right */
@@ -70,12 +69,13 @@
 .g-act__glass img { width: 24px; height: 24px; filter: drop-shadow(0 1px 0.5px rgba(255, 255, 255, 0.8)); }
 .g-act:active .g-act__glass {
   transform: scale(.94);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.08),
-    inset 0 0 0 0.5px var(--edge), inset 0 -2px 5px rgba(0, 0, 0, 0.05), inset 0 2px 3px rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04),
+    inset 0 0 0 1px var(--edge), inset 0 -2px 4px rgba(0, 0, 0, 0.04), inset 0 4px 8px rgba(255, 255, 255, 0.7);
 }
-.g-act--red   .g-act__glass { --tint-top: #fff7f7; --tint: #fdeceb; --tint-low: #fbd9d8; --edge: rgba(237, 25, 68, 0.22); }
-.g-act--grey  .g-act__glass { --tint-top: #ffffff; --tint: #f6f6f6; --tint-low: #e9e9e9; --edge: rgba(0, 0, 0, 0.10); }
-.g-act--lime  .g-act__glass { --tint-top: #fbfef2; --tint: #f2fadb; --tint-low: #e2f2b4; --edge: rgba(122, 170, 20, 0.30); }
+/* Figma fills and strokes, with only a gentle top-to-bottom tone */
+.g-act--red   .g-act__glass { --tint-top: #fff6f6; --tint: #fde9e8; --tint-low: #fbe0df; --edge: #fcb5b5; }
+.g-act--grey  .g-act__glass { --tint-top: #ffffff; --tint: #f6f6f6; --tint-low: #f0f0f0; --edge: #d6d6d6; }
+.g-act--lime  .g-act__glass { --tint-top: #fbfef3; --tint: #f1f9d6; --tint-low: #eaf5c6; --edge: #add71d; }
 .g-act__label { font-weight: 500; font-size: 11px; line-height: 16px; color: #525252; white-space: nowrap; }
 
 /* prototype time scrubber */
