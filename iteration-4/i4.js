@@ -162,8 +162,12 @@
 
     function layout() {
       const h = H();
+      const prevTop = spacer.offsetHeight, prevE = E;
       spacer.style.height = `${Math.max(0, h - peek())}px`;
       const top = spacer.offsetHeight;
+      // if the screen height changed (e.g. a phone's browser bars), keep the cards
+      // exactly where they are on screen instead of letting them jump
+      if (top !== prevTop && !anim && scroller.scrollTop > prevE + 1) scroller.scrollTop += top - prevTop;
       const ch = content.offsetHeight;
       E = Math.max(0, top + Math.min(-currentGap(), ch - h));
       maxScroll = Math.max(E, top + ch - h);
