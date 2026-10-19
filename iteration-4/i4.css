@@ -1,6 +1,7 @@
 /* Iteration 4 — glassy countdown (Figma 195:7071). Shared styles come from ../styles.css */
 
 .appbar { min-height: 60px; }
+.appbar--split { justify-content: space-between; }
 
 /* ---------- Status card ---------- */
 .g-card { position: relative; display: flex; flex-direction: column; align-items: center; }
@@ -37,7 +38,16 @@
 .g-card__content { width: 100%; border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; }
 .g-card__top { width: 100%; height: 36px; }
 .g-card__body { background: #fff; padding: 8px 16px 24px; display: flex; flex-direction: column; gap: 16px; align-items: center; }
-.g-card__title { width: 100%; text-align: center; font-weight: 700; font-size: 15px; line-height: 24px; }
+.g-card__title {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;
+  font-weight: 700; font-size: 15px; line-height: 24px;
+}
+/* animated status icon (Lottie), right of the title. 24px box: the basket's ink
+   is ~75% of its canvas, so it stands 18px tall — the title's ink height
+   (14px above the baseline + 4px below) — and its centre sits on the text's. */
+.g-card__icon { width: 24px; height: 24px; flex: none; }
+.g-card__icon svg { display: block; }
+.g-card__icon path { stroke: var(--content-primary); }
 
 /* round actions: 64px buttons, label underneath — exactly as Figma:
    fill + 1px inside stroke, and the "Action - Outline" inner shadow
@@ -55,12 +65,12 @@
   content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
   box-shadow: inset 0 4px 8px rgba(255, 255, 255, 0.7);
 }
-.g-act__glass svg { width: 24px; height: 24px; overflow: visible; }
+.g-act__glass svg { width: 22px; height: 22px; overflow: visible; }
 .g-act:active .g-act__glass { transform: scale(.96); }
 .g-act--red  .g-act__glass { --fill: #fde7e6; --stroke: #fcb5b5; }
 .g-act--grey .g-act__glass { --fill: #f5f5f5; --stroke: #d6d6d6; }
 .g-act--lime .g-act__glass { --fill: #f0f9d3; --stroke: #add71d; }
-.g-act__label { font-weight: 500; font-size: 11px; line-height: 16px; color: #525252; white-space: nowrap; }
+.g-act__label { font-weight: 500; font-size: 11px; line-height: 16px; color: #000; white-space: nowrap; }
 
 /* prototype time scrubber */
 .scrub { width: 194px; accent-color: #ed1944; cursor: pointer; }
