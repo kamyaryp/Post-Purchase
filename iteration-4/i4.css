@@ -39,43 +39,27 @@
 .g-card__body { background: #fff; padding: 8px 16px 24px; display: flex; flex-direction: column; gap: 16px; align-items: center; }
 .g-card__title { width: 100%; text-align: center; font-weight: 700; font-size: 15px; line-height: 24px; }
 
-/* round actions: 64px glass buttons, label underneath.
-   Same glass language as the countdown: a softly tinted, slightly convex body,
-   a light catch along the top, a bright hairline edge (top-left), a faint
-   shade along the bottom and a soft lift off the card. */
+/* round actions: 64px buttons, label underneath — exactly as Figma:
+   fill + 1px inside stroke, and the "Action - Outline" inner shadow
+   (white 70%, y 4, blur 8) drawn on top of both */
 .g-actions { display: flex; gap: 24px; align-items: center; justify-content: center; width: 100%; }
 .g-act { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 64px; }
 .g-act__glass {
-  --tint-top: #fff; --tint: #f5f5f5; --tint-low: #ececec; --edge: rgba(0, 0, 0, 0.08);
   position: relative; display: grid; place-items: center;
   width: 64px; height: 64px; border-radius: 50%;
-  background:
-    radial-gradient(110% 80% at 50% 0%, var(--tint-top) 0%, rgba(255, 255, 255, 0) 55%),
-    linear-gradient(180deg, var(--tint) 0%, var(--tint-low) 100%);
-  box-shadow:
-    0 2px 5px rgba(0, 0, 0, 0.04),
-    inset 0 0 0 1px var(--edge),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.025),
-    inset 0 4px 8px rgba(255, 255, 255, 0.7);
-  transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), box-shadow .25s ease;
+  background: var(--fill);
+  box-shadow: inset 0 0 0 1px var(--stroke);
+  transition: transform .15s var(--ease-smart);
 }
-/* specular hairline: bright at the top-left, fading, a little light again at the bottom-right */
 .g-act__glass::after {
-  content: ""; position: absolute; inset: 0; border-radius: 50%; padding: 1px; pointer-events: none;
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.1) 40%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.6) 100%);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor; mask-composite: exclude;
+  content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+  box-shadow: inset 0 4px 8px rgba(255, 255, 255, 0.7);
 }
-.g-act__glass img { width: 24px; height: 24px; filter: drop-shadow(0 1px 0.5px rgba(255, 255, 255, 0.8)); }
-.g-act:active .g-act__glass {
-  transform: scale(.94);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04),
-    inset 0 0 0 1px var(--edge), inset 0 -2px 4px rgba(0, 0, 0, 0.04), inset 0 4px 8px rgba(255, 255, 255, 0.7);
-}
-/* Figma fills and strokes, with only a gentle top-to-bottom tone */
-.g-act--red   .g-act__glass { --tint-top: #fff6f6; --tint: #fde9e8; --tint-low: #fbe0df; --edge: #fcb5b5; }
-.g-act--grey  .g-act__glass { --tint-top: #ffffff; --tint: #f6f6f6; --tint-low: #f0f0f0; --edge: #d6d6d6; }
-.g-act--lime  .g-act__glass { --tint-top: #fbfef3; --tint: #f1f9d6; --tint-low: #eaf5c6; --edge: #add71d; }
+.g-act__glass img { width: 24px; height: 24px; }
+.g-act:active .g-act__glass { transform: scale(.96); }
+.g-act--red  .g-act__glass { --fill: #fde7e6; --stroke: #fcb5b5; }
+.g-act--grey .g-act__glass { --fill: #f5f5f5; --stroke: #d6d6d6; }
+.g-act--lime .g-act__glass { --fill: #f0f9d3; --stroke: #add71d; }
 .g-act__label { font-weight: 500; font-size: 11px; line-height: 16px; color: #525252; white-space: nowrap; }
 
 /* prototype time scrubber */
