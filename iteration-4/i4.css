@@ -38,16 +38,10 @@
 .g-card__content { width: 100%; border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; }
 .g-card__top { width: 100%; height: 36px; }
 .g-card__body { background: #fff; padding: 8px 16px 24px; display: flex; flex-direction: column; gap: 16px; align-items: center; }
-.g-card__title {
-  width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;
-  font-weight: 700; font-size: 15px; line-height: 24px;
-}
-/* animated status icon (Lottie), right of the title. 24px box: the basket's ink
-   is ~75% of its canvas, so it stands 18px tall — the title's ink height
-   (14px above the baseline + 4px below) — and its centre sits on the text's. */
-.g-card__icon { width: 24px; height: 24px; flex: none; }
-.g-card__icon svg { display: block; }
-.g-card__icon path { stroke: var(--content-primary); }
+.g-card__title { width: 100%; text-align: center; font-weight: 700; font-size: 15px; line-height: 24px; }
+
+/* the two lower cards are slightly translucent over the map-grey page (Figma: white 70%) */
+.reco, .detail-card { background: rgba(255, 255, 255, 0.7); }
 
 /* round actions: 64px buttons, label underneath — exactly as Figma:
    fill + 1px inside stroke, and the "Action - Outline" inner shadow
