@@ -131,7 +131,7 @@
     const map = $("#map");
 
     // lowest point of the store / home / courier / route per state (map px @390w)
-    const POI_BOTTOM = { awaiting: 193, preparing: 272, finding: 272, out: 296, delivered: 272 };
+    const POI_BOTTOM = { awaiting: 210, preparing: 272, finding: 272, out: 296, delivered: 272 };   // awaiting: cards start at y 220 (Figma 195:7071)
     const POI_MARGIN = 10;
 
     let E = 0, maxScroll = 0;
@@ -306,6 +306,14 @@
     renderGauge(e);
     if (!scrubbing) scrub.value = Math.round(e);
     requestAnimationFrame(frame);
+  }
+  /* ---------- animated status icon (loops) ---------- */
+  if (window.lottie && window.LOTTIE_STATUS_AWAITING) {
+    lottie.loadAnimation({
+      container: $("#statusIcon"), renderer: "svg", loop: true, autoplay: true,
+      animationData: window.LOTTIE_STATUS_AWAITING,
+      rendererSettings: { preserveAspectRatio: "xMidYMid meet" },
+    });
   }
   reco.toggle(true);
   sheet.init();
