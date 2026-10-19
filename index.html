@@ -6,11 +6,18 @@
   <title>Post-Purchase</title>
   <link rel="icon" type="image/png" href="assets/favicon.png" />
   <link rel="apple-touch-icon" href="assets/favicon.png" />
-  <link rel="stylesheet" href="styles.css?v=11" />
+  <link rel="stylesheet" href="styles.css?v=12" />
 </head>
 <body>
   <!-- Prototype controls (not part of the design) -->
-  <div class="proto-controls">
+  <!-- Prototype settings (not part of the design): subtle gear, top-left -->
+  <button class="proto-gear" id="protoGear" aria-label="Prototype settings" aria-expanded="false" aria-controls="protoPanel">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M10.3 3.5h3.4l.5 2.3a6.5 6.5 0 0 1 1.7 1l2.2-.8 1.7 2.9-1.8 1.6a6.6 6.6 0 0 1 0 2l1.8 1.6-1.7 2.9-2.2-.8a6.5 6.5 0 0 1-1.7 1l-.5 2.3h-3.4l-.5-2.3a6.5 6.5 0 0 1-1.7-1l-2.2.8-1.7-2.9 1.8-1.6a6.6 6.6 0 0 1 0-2L4.2 8.9l1.7-2.9 2.2.8a6.5 6.5 0 0 1 1.7-1z"/>
+      <circle cx="12" cy="12" r="2.6"/>
+    </svg>
+  </button>
+  <div class="proto-controls" id="protoPanel" role="dialog" aria-label="Prototype settings" hidden>
   <label class="state-picker">
     <span>Iteration</span>
     <select id="iterationSelect" aria-label="Design iteration">
@@ -291,6 +298,7 @@
     </div>
   </main>
 
+  <script src="proto.js?v=1"></script>
   <script src="app.js?v=11"></script>
 </body>
 </html>
