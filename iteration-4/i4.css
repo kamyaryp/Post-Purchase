@@ -45,6 +45,9 @@
 
 /* the two lower cards are slightly translucent over the map-grey page (Figma: white 70%) */
 .reco, .detail-card { background: rgba(255, 255, 255, 0.7); }
+/* "جزئیات/ویرایش": 18px pencil, 6px / 10px side padding (Figma 201:10155) */
+.detail-card__edit { padding: 0 10px 0 6px; }
+.btn .btn__icon18 { width: 18px; height: 18px; }
 
 /* round actions: 64px buttons, label underneath — exactly as Figma:
    fill + 1px inside stroke, and the "Action - Outline" inner shadow
