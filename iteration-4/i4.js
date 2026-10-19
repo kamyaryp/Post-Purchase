@@ -26,43 +26,6 @@
   const timeEl = $("#gaugeTime");
   const C = 60;
 
-  // Refraction maps for feDisplacementMap: R/G encode where each pixel samples
-  // the map from (0.5 = no shift). Built once on a canvas.
-  function dispMap(offset) {
-    const N = 240, cv = document.createElement("canvas");
-    cv.width = cv.height = N;
-    const ctx = cv.getContext("2d"), img = ctx.createImageData(N, N);
-    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-      const dx = (x + 0.5) / 2 - C, dy = (y + 0.5) / 2 - C, r = Math.hypot(dx, dy) || 1;
-      const o = offset(r);                                      // + = sample further out, − = further in
-      const i = (y * N + x) * 4;
-      img.data[i] = 128 + 127 * Math.max(-1, Math.min(1, o * dx / r));
-      img.data[i + 1] = 128 + 127 * Math.max(-1, Math.min(1, o * dy / r));
-      img.data[i + 2] = 128; img.data[i + 3] = 255;
-    }
-    ctx.putImageData(img, 0, 0);
-    return cv.toDataURL();
-  }
-  const setHref = (el, url) => { el.setAttribute("href", url); el.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", url); };
-  // clear glass: flat in the middle, bending the map gently inwards right at the rim
-  setHref($("#gLensMap"), dispMap((r) => (r < 46 ? 0 : -Math.pow(Math.min(1, (r - 46) / 14), 2))));
-  // red glass: a faint magnification across the band
-  setHref($("#gLensMapRed"), dispMap((r) => -Math.max(-1, Math.min(1, (r - 52) / 8))));
-
-  // keep the map drawn inside the gauge exactly over the real map behind it
-  const maps = $$(".gmap", gauge);
-  const mapImg = $("#map .map__img");
-  let lastBox = "";
-  function alignMap() {
-    const m = mapImg.getBoundingClientRect(), g = gauge.getBoundingClientRect();
-    const k = 120 / g.width;
-    const box = [(m.left - g.left) * k, (m.top - g.top) * k, m.width * k, m.height * k].map((v) => v.toFixed(1));
-    const key = box.join();
-    if (key === lastBox) return;
-    lastBox = key;
-    maps.forEach((im) => { im.setAttribute("x", box[0]); im.setAttribute("y", box[1]); im.setAttribute("width", box[2]); im.setAttribute("height", box[3]); });
-  }
-
   let shown = null, set = -1, lastSec = -1;
   function renderGauge(e) {
     const target = e / TOTAL;                            // progress: fills from empty to a full ring
@@ -77,7 +40,6 @@
     }
     const sec = Math.max(0, Math.ceil(TOTAL - e) - 1);
     if (sec !== lastSec) { timeEl.textContent = fmt(sec); lastSec = sec; }
-    alignMap();
   }
 
   /* ---------- prototype controls ---------- */
@@ -113,6 +75,20 @@
   if (!savedSupport) { try { savedSupport = localStorage.getItem("pp-support"); } catch (e) {} }
   setSupport(savedSupport || "top-button");
   supportSelect.addEventListener("change", () => setSupport(supportSelect.value));
+
+  // card background toggle (?cards=prioritized|white)
+  const cardsSelect = $("#cardsSelect");
+  const CARDS = ["prioritized", "white"];
+  const setCards = (v) => {
+    if (!CARDS.includes(v)) v = "prioritized";
+    device.dataset.cards = v; cardsSelect.value = v;
+    try { localStorage.setItem("pp-cards", v); } catch (e) {}
+    const u = new URL(location.href); u.searchParams.set("cards", v); history.replaceState(null, "", u);
+  };
+  let savedCards = new URLSearchParams(location.search).get("cards");
+  if (!savedCards) { try { savedCards = localStorage.getItem("pp-cards"); } catch (e) {} }
+  setCards(savedCards || "prioritized");
+  cardsSelect.addEventListener("change", () => setCards(cardsSelect.value));
 
   const reco = (() => {
     const pages = [
@@ -252,6 +228,7 @@
     scroller.addEventListener("touchstart", () => { stop(); touching = true; samples = []; beginGesture(); }, { passive: true });
     const onTouchEnd = () => {
       touching = false; endGestureSoon();
+      scroller.style.overflowY = "";
       const st = scroller.scrollTop;
       if (gate && gate.min >= E) return;               // list gesture: native momentum, gate stops it at E
       if (st >= E - 1) return;                          // already expanded (or in the list)
@@ -306,8 +283,15 @@
       if (touching) { samples.push({ t: performance.now(), y: scroller.scrollTop }); if (samples.length > 12) samples.shift(); }
       if (gate && !anim) {
         const st = scroller.scrollTop;
-        if (st < gate.min - 0.5) scroller.scrollTop = gate.min;
-        else if (st > gate.max + 0.5) scroller.scrollTop = gate.max;
+        const stopAt = st < gate.min - 0.5 ? gate.min : st > gate.max + 0.5 ? gate.max : null;
+        if (stopAt !== null) {
+          // pin to the stop. On touch screens also end the native momentum, which
+          // would otherwise keep pushing against the pin and make the sheet shake.
+          scroller.style.overflowY = "hidden";
+          scroller.scrollTop = stopAt;
+          if (!touching) requestAnimationFrame(() => { scroller.style.overflowY = ""; });   // momentum: one frame is enough
+          // finger still down: stay pinned until it lifts (released in onTouchEnd)
+        }
       }
       if (gate) endGestureSoon();
       requestAnimationFrame(paint);

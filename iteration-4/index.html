@@ -6,18 +6,11 @@
   <title>Post-Purchase</title>
   <link rel="icon" type="image/png" href="../assets/favicon.png" />
   <link rel="apple-touch-icon" href="../assets/favicon.png" />
-  <link rel="stylesheet" href="../styles.css?v=12" />
-  <link rel="stylesheet" href="i4.css?v=19" />
+  <link rel="stylesheet" href="../styles.css?v=13" />
+  <link rel="stylesheet" href="i4.css?v=21" />
 </head>
 <body>
   <!-- Prototype controls (not part of the design) -->
-  <!-- Prototype settings (not part of the design): subtle gear, top-left -->
-  <button class="proto-gear" id="protoGear" aria-label="Prototype settings" aria-expanded="false" aria-controls="protoPanel">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M10.3 3.5h3.4l.5 2.3a6.5 6.5 0 0 1 1.7 1l2.2-.8 1.7 2.9-1.8 1.6a6.6 6.6 0 0 1 0 2l1.8 1.6-1.7 2.9-2.2-.8a6.5 6.5 0 0 1-1.7 1l-.5 2.3h-3.4l-.5-2.3a6.5 6.5 0 0 1-1.7-1l-2.2.8-1.7-2.9 1.8-1.6a6.6 6.6 0 0 1 0-2L4.2 8.9l1.7-2.9 2.2.8a6.5 6.5 0 0 1 1.7-1z"/>
-      <circle cx="12" cy="12" r="2.6"/>
-    </svg>
-  </button>
   <div class="proto-controls" id="protoPanel" role="dialog" aria-label="Prototype settings" hidden>
     <label class="state-picker">
       <span>Iteration</span>
@@ -44,12 +37,19 @@
       </select>
     </label>
     <label class="state-picker">
+      <span>Cards</span>
+      <select id="cardsSelect" aria-label="Card backgrounds">
+        <option value="prioritized">Prioritized (100% / 70%)</option>
+        <option value="white">All white 100%</option>
+      </select>
+    </label>
+    <label class="state-picker">
       <span>Time</span>
       <input class="scrub" id="scrub" type="range" min="0" max="2700" step="1" value="0" aria-label="Countdown position" />
     </label>
   </div>
 
-  <main class="device" id="device" data-state="awaiting" data-icons="2d" data-support="top-button">
+  <main class="device" id="device" data-state="awaiting" data-icons="2d" data-support="top-button" data-cards="prioritized">
 
     <!-- Fixed map -->
     <div class="map" id="map" aria-hidden="true">
@@ -93,20 +93,6 @@
             <div class="gauge" id="gauge" role="timer" aria-label="زمان باقی‌مانده">
               <svg class="gauge__svg" viewBox="0 0 120 120" aria-hidden="true">
                 <defs>
-                  <!-- glass: a little refraction toward the rim + a light frost -->
-                  <filter id="gLens" x="-10" y="-10" width="140" height="140" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                    <feImage id="gLensMap" x="0" y="0" width="120" height="120" preserveAspectRatio="none" result="d"/>
-                    <feDisplacementMap in="SourceGraphic" in2="d" scale="10" xChannelSelector="R" yChannelSelector="G"/>
-                    <feGaussianBlur stdDeviation="1.4"/>
-                    <feComponentTransfer><feFuncR type="linear" slope="0.94" intercept="0.07"/><feFuncG type="linear" slope="0.94" intercept="0.07"/><feFuncB type="linear" slope="0.94" intercept="0.075"/></feComponentTransfer>
-                  </filter>
-                  <!-- map seen through the red glass: very slightly bent, darkened so the red stays rich -->
-                  <filter id="gLensRed" x="-10" y="-10" width="140" height="140" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                    <feImage id="gLensMapRed" x="0" y="0" width="120" height="120" preserveAspectRatio="none" result="d"/>
-                    <feDisplacementMap in="SourceGraphic" in2="d" scale="8" xChannelSelector="R" yChannelSelector="G"/>
-                    <feGaussianBlur stdDeviation="0.8"/>
-                    <feComponentTransfer><feFuncR type="linear" slope="1.4" intercept="-0.6"/><feFuncG type="linear" slope="1.4" intercept="-0.6"/><feFuncB type="linear" slope="1.4" intercept="-0.6"/></feComponentTransfer>
-                  </filter>
                   <linearGradient id="gArc" x1="58.7" y1="8.4" x2="67.6" y2="112.4" gradientUnits="userSpaceOnUse">
                     <stop stop-color="#FF3564"/><stop offset="0.48" stop-color="#ED1944"/><stop offset="1" stop-color="#D90F4F"/>
                   </linearGradient>
@@ -135,13 +121,11 @@
                   </linearGradient>
                 </defs>
 
-                <!-- 1 · glass ring: the map, softly refracted and frosted -->
-                <image class="gmap" href="../assets/2225c.png" preserveAspectRatio="xMidYMid slice" filter="url(#gLens)"/>
+                <!-- 1 · glass ring: the real map behind, lightly frosted by the gauge's backdrop filter (see i4.css) -->
 
                 <!-- 2 · progress arc (clean, slightly translucent) with a hairline highlight on its outer edge -->
                 <g class="gauge__arc">
                   <g mask="url(#gArcMask)">
-                    <image class="gmap" href="../assets/2225c.png" preserveAspectRatio="xMidYMid slice" filter="url(#gLensRed)"/>
                     <rect width="120" height="120" fill="url(#gArc)" opacity="0.9"/>
                     <circle cx="60" cy="60" r="59.2" fill="none" stroke="#fff" stroke-opacity="0.35" stroke-width="0.8"/>
                   </g>
@@ -248,12 +232,22 @@
               <span class="btn__label">تماس با پشتیبانی</span>
             </button>
           </section>
+
+          <!-- Prototype settings (not part of the design): subtle gear at the bottom of the page -->
+          <div class="proto-foot">
+          <button class="proto-gear" id="protoGear" aria-label="Prototype settings" aria-expanded="false" aria-controls="protoPanel">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M10.3 3.5h3.4l.5 2.3a6.5 6.5 0 0 1 1.7 1l2.2-.8 1.7 2.9-1.8 1.6a6.6 6.6 0 0 1 0 2l1.8 1.6-1.7 2.9-2.2-.8a6.5 6.5 0 0 1-1.7 1l-.5 2.3h-3.4l-.5-2.3a6.5 6.5 0 0 1-1.7-1l-2.2.8-1.7-2.9 1.8-1.6a6.6 6.6 0 0 1 0-2L4.2 8.9l1.7-2.9 2.2.8a6.5 6.5 0 0 1 1.7-1z"/>
+              <circle cx="12" cy="12" r="2.6"/>
+            </svg>
+          </button>
+          </div>
         </div>
       </div>
     </div>
   </main>
 
-  <script src="../proto.js?v=1"></script>
-  <script src="i4.js?v=14"></script>
+  <script src="../proto.js?v=2"></script>
+  <script src="i4.js?v=16"></script>
 </body>
 </html>

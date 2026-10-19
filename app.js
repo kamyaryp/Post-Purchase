@@ -484,6 +484,7 @@
     scroller.addEventListener("touchstart", () => { stop(); touching = true; samples = []; beginGesture(); }, { passive: true });
     const onTouchEnd = () => {
       touching = false; endGestureSoon();
+      scroller.style.overflowY = "";
       const st = scroller.scrollTop;
       if (gate && gate.min >= E) return;               // list gesture: native momentum, gate stops it at E
       if (st >= E - 1) return;                          // already expanded (or in the list)
@@ -538,8 +539,15 @@
       if (touching) { samples.push({ t: performance.now(), y: scroller.scrollTop }); if (samples.length > 12) samples.shift(); }
       if (gate && !anim) {
         const st = scroller.scrollTop;
-        if (st < gate.min - 0.5) scroller.scrollTop = gate.min;
-        else if (st > gate.max + 0.5) scroller.scrollTop = gate.max;
+        const stopAt = st < gate.min - 0.5 ? gate.min : st > gate.max + 0.5 ? gate.max : null;
+        if (stopAt !== null) {
+          // pin to the stop. On touch screens also end the native momentum, which
+          // would otherwise keep pushing against the pin and make the sheet shake.
+          scroller.style.overflowY = "hidden";
+          scroller.scrollTop = stopAt;
+          if (!touching) requestAnimationFrame(() => { scroller.style.overflowY = ""; });   // momentum: one frame is enough
+          // finger still down: stay pinned until it lifts (released in onTouchEnd)
+        }
       }
       if (gate) endGestureSoon();
       requestAnimationFrame(paint);

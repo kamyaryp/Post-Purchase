@@ -18,6 +18,11 @@
   overflow: hidden;
   isolation: isolate;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  /* glass: the real map behind, lightly frosted and brightened — done by the
+     compositor, so it stays locked to the map while the cards scroll */
+  -webkit-backdrop-filter: blur(1.4px) brightness(1.05) saturate(.95);
+  backdrop-filter: blur(1.4px) brightness(1.05) saturate(.95);
+  background: rgba(255, 255, 255, 0.06);
 }
 /* glass sitting slightly into the surface: soft shade under the top lip, hairline edge */
 .gauge::after {
@@ -121,6 +126,11 @@
 .sup-row__chev { width: 24px; height: 24px; flex: none; }
 .sup-card__cta { width: 100%; padding: 0 8px; color: #fff; }
 .sup-card__cta-icon { width: 24px; height: 24px; }
+
+/* ---------- card background variants (prototype toggle: Cards) ----------
+   prioritized: status card white 100%, the cards below it white 70% (default)
+   white:       every card solid white */
+[data-cards="white"] :is(.reco, .detail-card, .sup-card) { background: #fff; }
 
 /* prototype time scrubber */
 .scrub { width: 220px; accent-color: #ed1944; cursor: pointer; }
