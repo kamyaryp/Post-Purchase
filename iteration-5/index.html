@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="fa">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Post-Purchase</title>
+  <link rel="icon" type="image/png" href="../assets/favicon.png" />
+  <link rel="apple-touch-icon" href="../assets/favicon.png" />
+  <link rel="stylesheet" href="i5.css?v=1" />
+</head>
+<body>
+  <!-- Prototype controls (not part of the design) -->
+  <div class="proto-controls" id="protoPanel" role="dialog" aria-label="Prototype settings" hidden>
+    <label class="state-picker">
+      <span>Iteration</span>
+      <select id="iterationSelect" aria-label="Design iteration">
+        <option value="../">3</option>
+        <option value="../iteration-4/">4</option>
+        <option value="./" selected>5</option>
+      </select>
+    </label>
+    <label class="state-picker">
+      <span>State</span>
+      <select id="stateSelect" aria-label="Order state">
+        <optgroup label="Flow">
+          <option value="confirm">Address confirmation</option>
+          <option value="awaiting">Awaiting store confirmation</option>
+          <option value="preparing">Preparing</option>
+          <option value="finding">Finding courier</option>
+          <option value="toStore">Courier en route to store</option>
+          <option value="out">Out for delivery</option>
+          <option value="confirmDelivery">Awaiting delivery confirmation</option>
+          <option value="delivered">Delivered</option>
+        </optgroup>
+        <optgroup label="Exceptions">
+          <option value="replace">Item replacement required</option>
+          <option value="replaceConfirm">Awaiting replacement confirmation</option>
+          <option value="payment">Awaiting payment</option>
+          <option value="support">Support follow-up</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="returned">Returned</option>
+        </optgroup>
+      </select>
+    </label>
+  </div>
+
+  <main class="device" id="device" data-state="awaiting">
+
+    <!-- Fixed map (stays put while the cards scroll over it) -->
+    <div class="map" id="map" aria-hidden="true">
+      <img class="map__img" src="../assets/2225c.png" alt="" />
+      <svg class="map__overlay" viewBox="0 0 390 662.228" preserveAspectRatio="none">
+        <defs>
+          <radialGradient id="radarGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(155 154.998) rotate(120) scale(149.975)"><stop stop-color="#ED1944" stop-opacity="0.3"/><stop offset="1" stop-color="#ED1944" stop-opacity="0"/></radialGradient>
+          <linearGradient id="radarWedge" x1="272.616" y1="148.656" x2="194.557" y2="75.0324" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="0.8"/><stop offset="1" stop-color="white" stop-opacity="0"/></linearGradient>
+          <filter id="radarBlur" x="0" y="0" width="310" height="310" filterUnits="userSpaceOnUse"><feGaussianBlur stdDeviation="2.5"/></filter>
+          <path id="routePath" d="M9.15018 23.5649L2.31969 47.0922C1.10066 51.2911 3.4785 55.6909 7.65899 56.9717L78.8343 78.778C83.2159 80.1204 87.8275 77.515 88.9389 73.0692L103.89 13.2659C105.009 8.79043 109.671 6.18618 114.068 7.58012L210.644 38.1928C214.87 39.5324 219.38 37.1798 220.699 32.9473L230.345 2.00053"/>
+        </defs>
+
+        <!-- Preparing / finding / courier to store: planned route (grey, dashed) -->
+        <g class="ml ml--plan" transform="translate(87.889 187.879)">
+          <use href="#routePath" stroke="#999" stroke-opacity="0.25" stroke-width="4" stroke-linecap="round" fill="none"/>
+          <use class="route-dash" href="#routePath" stroke="#999" stroke-opacity="0.6" stroke-width="4" stroke-linecap="round" stroke-dasharray="3.5 8.75" fill="none"/>
+        </g>
+        <!-- Awaiting delivery confirmation: the whole route, travelled -->
+        <g class="ml ml--done" transform="translate(87.889 187.879)">
+          <use href="#routePath" stroke="#C8C8C8" stroke-width="4" stroke-linecap="round" fill="none"/>
+        </g>
+        <!-- Out for delivery: completed (grey) + remaining (pink) -->
+        <g class="ml ml--live" transform="translate(87.889 187.879)">
+          <path id="routeDone" d="M9.15018 23.5649L2.31969 47.0922C1.10066 51.2911 3.4785 55.6909 7.65899 56.9717L78.8343 78.778C83.2159 80.1204 87.8275 77.515 88.9389 73.0692L103.89 13.2659C105.009 8.79043 109.671 6.18618 114.068 7.58012L210.644 38.1928C214.87 39.5324 219.38 37.1798 220.699 32.9473L230.345 2.00053" pathLength="1" stroke="#C8C8C8" stroke-width="4" stroke-linecap="round" fill="none" stroke-dasharray="0.1 2"/>
+          <path id="routeLeft" d="M9.15018 23.5649L2.31969 47.0922C1.10066 51.2911 3.4785 55.6909 7.65899 56.9717L78.8343 78.778C83.2159 80.1204 87.8275 77.515 88.9389 73.0692L103.89 13.2659C105.009 8.79043 109.671 6.18618 114.068 7.58012L210.644 38.1928C214.87 39.5324 219.38 37.1798 220.699 32.9473L230.345 2.00053" pathLength="1" stroke="#F3839A" stroke-width="4" stroke-linecap="round" fill="none" stroke-dasharray="0.9 2" stroke-dashoffset="-0.1"/>
+        </g>
+
+        <!-- Finding a courier: nearby couriers blink in and out on the streets -->
+        <g class="ml ml--blips" id="blips"></g>
+
+        <!-- Finding a courier: radar search area centred on the store -->
+        <g class="ml ml--radar" transform="translate(-57 49.6)">
+          <g filter="url(#radarBlur)">
+            <path class="radar__glow" fill="url(#radarGlow)" d="M80.0125 284.882C8.2806 243.468 -16.2966 151.744 25.1179 80.0125C66.5323 8.2806 158.256 -16.2966 229.988 25.1179C301.719 66.5323 326.297 158.256 284.882 229.988C243.468 301.719 151.744 326.297 80.0125 284.882Z"/>
+            <path class="radar__sweep" fill="url(#radarWedge)" d="M304.974 155.002C304.974 126.381 296.784 98.3579 281.372 74.2413C265.96 50.1247 243.97 30.9216 217.996 18.8994L154.999 155.002H304.974Z"/>
+          </g>
+        </g>
+
+        <!-- Pins: store and work (destination) -->
+        <image class="ml ml--store" href="assets/e9455.svg" x="80" y="165" width="36" height="47.7433"/>
+        <image class="pin-work" href="assets/6649e.svg" x="300.11" y="142.63" width="36" height="47.7433"/>
+
+        <!-- Courier on the route (out for delivery) / parked at the door (awaiting delivery confirmation) -->
+        <g class="ml ml--courier" id="courier" transform="translate(132.5 256.7) rotate(102.88)">
+          <image href="assets/d0201.png" x="-25" y="-25" width="50" height="50"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Fixed header: phone status bar + top navigation -->
+    <header class="header">
+      <div class="statusbar">
+        <span class="statusbar__time">19:02</span>
+        <img class="statusbar__icons" src="assets/f9908.svg" alt="" />
+      </div>
+      <div class="appbar">
+        <span class="appbar__title"></span>
+        <button class="btn btn--elevated btn--icon" aria-label="بازگشت"><img src="assets/4fb11.svg" alt="" /></button>
+      </div>
+    </header>
+
+    <!-- Address confirmation: 10 seconds to check the address before the order is submitted -->
+    <section class="confirm" id="confirm" aria-live="polite" hidden>
+      <div class="confirm__bg" aria-hidden="true"></div>
+      <div class="statusbar confirm__status">
+        <span class="statusbar__time">19:02</span>
+        <img class="statusbar__icons" src="assets/f9908.svg" alt="" />
+      </div>
+      <div class="confirm__content">
+        <div class="confirm__circle" id="confirmCircle">
+          <div class="confirm__map"><img src="../assets/2225c.png" alt="" /></div>
+          <img class="confirm__pin" src="../assets/50343.svg" alt="" />
+          <div class="confirm__wipe" aria-hidden="true"></div>
+          <!-- the countdown of the next screen, grown inside the circle as it turns white -->
+          <div class="confirm__next" aria-hidden="true">
+            <span class="confirm__next-timer">۴۴:۵۹</span>
+          </div>
+          <svg class="confirm__ring" viewBox="0 0 165 165" aria-hidden="true">
+            <circle cx="82.5" cy="82.5" r="80" fill="none" stroke="#fff" stroke-width="5"/>
+            <circle id="confirmArc" cx="82.5" cy="82.5" r="80" pathLength="1" fill="none" stroke="#ED1944" stroke-opacity="0.7" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 2" transform="rotate(-90 82.5 82.5)"/>
+          </svg>
+        </div>
+        <h1 class="confirm__title" dir="rtl">در حال ثبت سفارش</h1>
+        <div class="confirm__card">
+          <div class="confirm__text">
+            <p class="t-prominent-sm" dir="rtl">ارسال به خانه؟</p>
+            <p class="t-subtle-sm" dir="rtl">ونک، ملاصدرا، شیخ‌بهایی شمالی، نبش لادن، پلاک ۸۵</p>
+          </div>
+          <button class="btn btn--block confirm__change" id="confirmChange"><span class="btn__label" dir="rtl">تغییر آدرس</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scrollable screen (no visible scrollbar) -->
+    <div class="scroller" id="scroller">
+      <div class="screen">
+        <div class="sheet-spacer" id="sheetSpacer" aria-hidden="true"></div>
+        <div class="sheet-snap" id="sheetSnap" aria-hidden="true"></div>
+
+        <div class="content" id="content">
+          <div class="sheet-fade" aria-hidden="true"></div>
+
+          <!-- Order status card -->
+          <section class="status-card" aria-live="polite">
+            <!-- Status indicator: countdown dial, or a static dial for the other states -->
+            <div class="dial" id="dial" role="timer" aria-label="زمان باقی‌مانده">
+              <div class="dial__timer">
+                <img class="dial__center" src="assets/7ab8a.svg" alt="" />
+                <svg class="dial__arc" viewBox="0 0 120 120" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="arcGrad" x1="58.7" y1="8.38" x2="67.6" y2="112.38" gradientUnits="userSpaceOnUse"><stop stop-color="#FF3564"/><stop offset="0.48" stop-color="#ED1944"/><stop offset="1" stop-color="#D90F4F"/></linearGradient>
+                    <filter id="arcBlur" x="0" y="0" width="120" height="120" filterUnits="userSpaceOnUse"><feGaussianBlur stdDeviation="2"/></filter>
+                  </defs>
+                  <circle id="dialArc" cx="60" cy="60.38" r="52" pathLength="1" fill="none" stroke="url(#arcGrad)" stroke-opacity="0.8" stroke-width="16" stroke-linecap="round" stroke-dasharray="0.75 2" transform="rotate(-90 60 60.38)"/>
+                  <circle id="dialArcBlur" cx="60" cy="60.38" r="44.09" pathLength="1" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round" stroke-dasharray="0.75 2" opacity="0.21" filter="url(#arcBlur)" transform="rotate(-90 60 60.38)"/>
+                </svg>
+                <span class="dial__time" id="dialTime">۴۴:۵۹</span>
+              </div>
+              <img class="dial__static" id="dialStatic" src="assets/44f93.svg" alt="" />
+            </div>
+
+            <div class="status-card__content">
+              <div class="cutout" aria-hidden="true">
+                <span></span>
+                <svg width="169.228" height="36" viewBox="0 0 169.228 36"><path d="M0 0C14.1527 0 27.5857 5.86 37.8697 15.87C50.0587 27.73 66.5047 35 84.6137 35C102.723 35 119.169 27.73 131.358 15.87C141.642 5.87 155.075 0 169.228 0V36H0Z" fill="#fff"/></svg>
+                <span></span>
+              </div>
+              <div class="status-body" id="statusBody">
+                <div class="status-details" id="statusDetails">
+                  <h1 class="status-details__title" id="statusTitle" dir="rtl">در انتظار تأیید فروشگاه</h1>
+                  <p class="status-details__sub" dir="rtl">ارسال به محل‌کار (ونک، خدامی)</p>
+                </div>
+                <div class="status-extra" id="statusExtra"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Product recommendations (awaiting store confirmation only) -->
+          <section class="card reco" id="reco">
+            <div class="section-heading"><h2 dir="rtl">چیزی جا نمونده؟</h2></div>
+            <div class="reco__track" id="recoTrack" dir="rtl"></div>
+          </section>
+
+          <!-- Order items -->
+          <section class="card items" id="items">
+            <div class="section-heading">
+              <h2 dir="rtl">کالاها</h2>
+              <span class="chev-chip"><img src="assets/4995f.svg" alt="" /></span>
+            </div>
+            <div class="items__viewport" dir="rtl">
+              <div class="items__track" id="itemsTrack"></div>
+            </div>
+            <div class="items__sum">
+              <div class="pay-sum">
+                <span class="pay-sum__label" dir="rtl">مبلغ پرداختی</span>
+                <span class="pay-sum__amount" dir="ltr">۵۳۳,۰۰۰ تومان</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Support -->
+          <section class="card support" id="supportCard">
+            <div class="section-heading section-heading--flush"><h2 dir="rtl">نیاز به پشتیبانی دارید؟</h2></div>
+            <div class="topics">
+              <button class="topic">
+                <img class="topic__chev" src="assets/3f5c4.svg" alt="" />
+                <span class="topic__text">
+                  <span class="topic__title" dir="rtl">مشکل کالاهای سفارش</span>
+                  <span class="topic__sub" dir="rtl">عدم ارسال یک کالا، مغایرت کالا و کیفیت نامناسب کالا</span>
+                </span>
+                <span class="topic__ill"><img src="assets/c3ca0.png" alt="" style="left:14.93%;top:11.28%;width:70.14%;height:70.14%" /></span>
+              </button>
+              <div class="divider"><span></span></div>
+              <button class="topic">
+                <img class="topic__chev" src="assets/3f5c4.svg" alt="" />
+                <span class="topic__text">
+                  <span class="topic__title" dir="rtl">فرآیند پرداخت</span>
+                  <span class="topic__sub" dir="rtl">پرداخت ناموفق، مشکل کیف پول و مشکل کد تخفیف</span>
+                </span>
+                <span class="topic__ill"><img src="assets/f8fe1.png" alt="" style="left:6.15%;top:4.58%;width:87.71%;height:87.71%" /></span>
+              </button>
+              <div class="divider"><span></span></div>
+              <button class="topic">
+                <img class="topic__chev" src="assets/3f5c4.svg" alt="" />
+                <span class="topic__text">
+                  <span class="topic__title" dir="rtl">پیگیری سفارش و دلایل دیگر</span>
+                  <span class="topic__sub" dir="rtl">پیگیری سفارش، انتقادات، پیشنهادات و...</span>
+                </span>
+                <span class="topic__ill topic__ill--flip"><img src="assets/0949a.png" alt="" style="left:15.86%;top:18.94%;width:62.12%;height:62.12%" /></span>
+              </button>
+            </div>
+            <button class="btn btn--block-full">
+              <span class="btn__label" dir="rtl">تماس با پشتیبانی</span>
+              <img src="assets/d2026.svg" alt="" />
+            </button>
+          </section>
+
+          <!-- Prototype settings (not part of the design): subtle gear at the bottom of the page -->
+          <div class="proto-foot">
+            <button class="proto-gear" id="protoGear" aria-label="Prototype settings" aria-expanded="false" aria-controls="protoPanel">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M10.3 3.5h3.4l.5 2.3a6.5 6.5 0 0 1 1.7 1l2.2-.8 1.7 2.9-1.8 1.6a6.6 6.6 0 0 1 0 2l1.8 1.6-1.7 2.9-2.2-.8a6.5 6.5 0 0 1-1.7 1l-.5 2.3h-3.4l-.5-2.3a6.5 6.5 0 0 1-1.7-1l-2.2.8-1.7-2.9 1.8-1.6a6.6 6.6 0 0 1 0-2L4.2 8.9l1.7-2.9 2.2.8a6.5 6.5 0 0 1 1.7-1z"/>
+                <circle cx="12" cy="12" r="2.6"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../proto.js?v=2"></script>
+  <script src="i5.js?v=1"></script>
+</body>
+</html>

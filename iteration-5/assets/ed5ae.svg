@@ -1,0 +1,10 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="104.769" height="120" viewBox="0 0 104.769 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path id="Progress Arc" d="M44.7701 8C53.3215 8.00019 61.7408 10.1093 69.2824 14.1405C76.824 18.1717 83.255 24.0006 88.0058 31.1109C92.7566 38.2211 95.6805 46.3933 96.5186 54.9035C97.3568 63.4137 96.0832 71.9993 92.8107 79.8997C89.5382 87.8001 84.3678 94.7715 77.7575 100.196C71.1472 105.621 63.301 109.332 54.914 111.001C46.527 112.669 37.8579 112.243 29.6747 109.761C21.4915 107.279 14.0468 102.817 8 96.7701" stroke-width="16" stroke-linecap="round" stroke="url(#paint0_linear_0_826)" stroke-opacity="0.8"/>
+<defs>
+<linearGradient id="paint0_linear_0_826" x1="43.4864" y1="8" x2="52.3845" y2="112" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FF3564"/>
+<stop offset="0.48" stop-color="#ED1944"/>
+<stop offset="1" stop-color="#D90F4F"/>
+</linearGradient>
+</defs>
+</svg>

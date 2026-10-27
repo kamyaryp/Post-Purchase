@@ -1,0 +1,12 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="84.2623" height="97.1758" viewBox="0 0 84.2623 97.1758" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Progress Arc Blur" opacity="0.21" filter="url(#filter0_f_0_751)">
+<path d="M35.6753 4.5C42.9255 4.50016 50.0638 6.28836 56.4579 9.7062C62.852 13.124 68.3045 18.066 72.3324 24.0944C76.3603 30.1228 78.8394 37.0515 79.55 44.2669C80.2606 51.4822 79.1808 58.7614 76.4062 65.4597C73.6316 72.158 69.248 78.0687 63.6435 82.6682C58.039 87.2677 51.3867 90.4141 44.2757 91.8286C37.1648 93.2431 29.8148 92.882 22.8768 90.7775C15.9387 88.6729 9.62676 84.8898 4.5 79.7632" stroke-linecap="round" stroke="black"/>
+</g>
+<defs>
+<filter id="filter0_f_0_751" x="0" y="0" width="84.2623" height="97.1758" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="2" result="effect1_foregroundBlur_0_751"/>
+</filter>
+</defs>
+</svg>
